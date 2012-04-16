@@ -1,0 +1,14 @@
+XQuery utility to convert MARC/XML Authority records to MADS/RDF and SKOS resources.
+
+ml.xqy - can be used with the MarkLogic Database and Application Server (http://community.marklogic.com/docs).  This expects an HTTP application server.
+
+saxon.xqy can be used with the Saxon XSLT and Xquery Processoer.  This has been tested using the Saxon processor in Eclipse and Oxygen.
+
+
+Parameters (HTTP for ml.xqy; external for saxon.xqy):
+
+	marcxmluri - Path to MARC/XML file.  File can be retrieved over HTTP (begin http://) or from the filesystem.
+	model - expected values are: madsrdf, skos, all
+	
+
+

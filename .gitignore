@@ -1,0 +1,18 @@
+# Lines starting with '#' are considered comments.
+# For syntax, see http://www.kernel.org/pub/software/scm/git/docs/gitignore.html
+
+# Ignore 
+test.xqy
+.build*
+.project*
+.setting*
+
+# Ignore objects and archives.
+#*.[oa]
+# Ignore any file named foo.txt.
+# foo.txt
+# Ignore (generated) html files,
+#*.html
+# except foo.html which is maintained by hand.
+#!foo.html
+
