@@ -468,6 +468,11 @@ declare function marcxml2madsrdf:create-component(
         else ()
       
     let $label := fn:string-join($elements, ' ')
+    let $label := 
+        if ( fn:ends-with($label, ".") and fn:not(fn:contains($type, "Name")) ) then
+            fn:substring($label, 1, (fn:string-length($label) - 1))
+        else 
+            $label
     
     let $component := 
         if ($type ne "") then
@@ -547,11 +552,12 @@ declare function marcxml2madsrdf:create-element(
     let $element :=
         if ($sf/@code ne 'w') then
             let $el := $marcxml2madsrdf:elementTypeMap/elementType[@tag_suffix=$tag_suffix and @code=$sf/@code and fn:not(@ancillary)]/text()
+            let $label := xs:string($sf)
             return
                 element {$el} {
                     element madsrdf:elementValue { 
                         attribute xml:lang {"en"},
-                        text {$sf} 
+                        $label
                     }
                 }
         else ()
@@ -938,7 +944,14 @@ declare function marcxml2madsrdf:generate-label(
                 else ""
             )   
         else
-            fn:string-join($df/marcxml:subfield[@code ne 'w' and @code ne '6'] , '--')
+            let $label := fn:string-join($df/marcxml:subfield[@code ne 'w' and @code ne '6'] , '--')
+            let $label := 
+                if ( fn:ends-with($label, ".") ) then
+                    fn:substring($label, 1, (fn:string-length($label) - 1))
+                else 
+                    $label
+            return $label
+            
     return fn:normalize-space($label)
 };
 
