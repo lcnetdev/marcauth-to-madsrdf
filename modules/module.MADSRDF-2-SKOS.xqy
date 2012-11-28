@@ -194,8 +194,8 @@ declare function madsrdf2skos:mads2skos-recordinfo($ri as element(madsrdf:adminM
         <cs:subjectOfChange rdf:resource="{$uri}" />,
         if ($ri/ri:RecordInfo/ri:recordContentSource) then
             element cs:creatorName {
-                if (fn:contains($ri/ri:RecordInfo/ri:recordContentSource/@rdf:resource , "/dlc")) then
-                    "Library of Congress, Network Development and MARC Standards Office"
+                if ($ri/ri:RecordInfo/ri:recordContentSource/@rdf:resource) then
+                    $ri/ri:RecordInfo/ri:recordContentSource/@rdf:resource
                 else
                     xs:string($ri/ri:RecordInfo/ri:recordContentSource)
             }
