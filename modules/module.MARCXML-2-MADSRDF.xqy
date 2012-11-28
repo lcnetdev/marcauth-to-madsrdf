@@ -42,10 +42,11 @@ module namespace marcxml2madsrdf = 'info:lc/id-modules/marcxml2madsrdf2#';
 import module namespace marcxml2recordinfo = "info:lc/id-modules/recordInfoRDF#" at "module.MARCXML-2-RecordInfoRDF.xqy";
 
 (: NAMESPACES :)
-declare namespace marcxml   = "http://www.loc.gov/MARC21/slim";
-declare namespace madsrdf   = "http://www.loc.gov/mads/rdf/v1#";
-declare namespace rdf       = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-declare namespace owl       = "http://www.w3.org/2002/07/owl#";
+declare namespace marcxml       = "http://www.loc.gov/MARC21/slim";
+declare namespace madsrdf       = "http://www.loc.gov/mads/rdf/v1#";
+declare namespace rdf           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+declare namespace owl           = "http://www.w3.org/2002/07/owl#";
+
 
 (: Mapping of yXX to element types :)
 declare variable $marcxml2madsrdf:elementTypeMap :=
@@ -108,9 +109,11 @@ declare variable $marcxml2madsrdf:elementTypeMap :=
         
         <elementType tag_suffix="30" code="a">madsrdf:MainTitleElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="d">madsrdf:TemporalElement</elementType>
+        <elementType tag_suffix="30" code="a" ancillary="f">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="l">madsrdf:LanguageElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="n">madsrdf:PartNumberElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="p">madsrdf:PartNameElement</elementType>
+        <elementType tag_suffix="30" code="a" ancillary="s">madsrdf:SubTitleElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="t">madsrdf:TitleElement</elementType>
         <elementType tag_suffix="30" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="30" code="x">madsrdf:TopicElement</elementType>
