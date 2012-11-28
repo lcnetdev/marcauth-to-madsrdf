@@ -270,7 +270,6 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
             "genreForms"
         else
             "empty"
-    
 
     (: LC Specific :) 
     let $leader_pos05 := fn:substring($marcxml/marcxml:leader, 6 ,1)
@@ -311,6 +310,13 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
     let $relations := 
         for $df in $marcxml/marcxml:datafield[fn:starts-with(@tag,'5')]|$marcxml/marcxml:datafield[fn:starts-with(@tag,'4') and marcxml:subfield[1]/@code="w"]
         return marcxml2madsrdf:create-relation($df)
+        
+    let $undiff :=
+        if ( fn:substring($marcxml/marcxml:controlfield[@tag='008'], 33 ,1) eq 'b' and $scheme eq "names") then
+            element madsrdf:isMemberOfMADSCollection {
+                attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_NamesUndifferentiated'}
+        }
+        else ()
 
     (: Note - this could be LC specific :)
     let $df682 := $marcxml/marcxml:datafield[@tag='682'][1] (: can there ever be more than one? :)
@@ -379,6 +385,7 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
                     $componentList,
                     $elementList,
                     $variants,
+                    $undiff,
                     $relations,
                     $sources,
                     $notes,
