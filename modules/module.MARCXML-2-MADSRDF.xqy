@@ -46,7 +46,7 @@ declare namespace marcxml       = "http://www.loc.gov/MARC21/slim";
 declare namespace madsrdf       = "http://www.loc.gov/mads/rdf/v1#";
 declare namespace rdf           = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare namespace owl           = "http://www.w3.org/2002/07/owl#";
-
+declare namespace identifiers   = "http://id.loc.gov/vocabulary/identifiers/";
 
 (: Mapping of yXX to element types :)
 declare variable $marcxml2madsrdf:elementTypeMap :=
@@ -347,6 +347,29 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
         if ($deleted and $df682) then
              marcxml2madsrdf:create-note-deleted($df682)
         else ()
+        
+    let $identifiers :=
+        (
+            element identifiers:lccn { fn:normalize-space($marcxml/marcxml:datafield[@tag eq "010"]/marcxml:subfield[@code eq "a"]) },
+            
+            for $i in $marcxml/marcxml:datafield[@tag eq "020"]
+            let $code := fn:normalize-space($i/marcxml:subfield[@code eq "2"])
+            let $iStr := fn:normalize-space(xs:string($i/marcxml:subfield[@code eq "a"]))
+            where $iStr ne ""
+            return
+                if ( $code ne "" ) then
+                    element { fn:concat("identifiers:" , $code) } { $iStr }
+                else
+                    element identifiers:id { $iStr },
+                    
+            for $i in $marcxml/marcxml:datafield[@tag eq "035"]/marcxml:subfield[@code eq "a"][fn:not( fn:contains(. , "DLC") )]
+            let $iStr := xs:string($i)
+            return
+                if ( fn:contains($iStr, "(OCoLC)" ) ) then
+                    element identifiers:oclcnum { fn:normalize-space(fn:replace($iStr, "\(OCoLC\)", "")) }
+                else
+                    element identifiers:id { fn:normalize-space($iStr) }
+        )
          
     let $classification := 
         for $df in $marcxml/marcxml:datafield[@tag='053']
@@ -400,6 +423,7 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
                     $sources,
                     $notes,
                     $classification,
+                    $identifiers,
                     $adminMetadata
                 }
             return $authority
