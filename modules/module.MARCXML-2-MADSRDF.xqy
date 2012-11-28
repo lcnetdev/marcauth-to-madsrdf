@@ -932,13 +932,13 @@ declare function marcxml2madsrdf:generate-label(
         if (fn:matches($df_suffix, ("00|10|11|30"))) then
             (: we have a name :)
             fn:concat(
-                fn:string-join($df/marcxml:subfield[@code ne 'w' and @code!='v' and @code!='x' and @code!='y' and @code!='z'] , ' '),
+                fn:string-join($df/marcxml:subfield[@code ne 'w' and @code!='v' and @code!='x' and @code!='y' and @code!='z' and @code!='6'] , ' '),
                 if ( $df/marcxml:subfield[@code='v' or @code='x' or @code='y' or @code='z'] ) then
                     fn:concat("--",fn:string-join($df/marcxml:subfield[@code='v' or @code='x' or @code='y' or @code='z'] , '--'))
                 else ""
             )   
         else
-            fn:string-join($df/marcxml:subfield[@code ne 'w'] , '--')
+            fn:string-join($df/marcxml:subfield[@code ne 'w' and @code ne '6'] , '--')
     return fn:normalize-space($label)
 };
 
