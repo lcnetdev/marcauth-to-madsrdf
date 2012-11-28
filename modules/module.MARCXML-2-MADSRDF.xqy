@@ -29,6 +29,12 @@ xquery version "1.0";
 :   @version 1.0
 :)
 
+(:
+
+    Note (kefo - 28 Nov 2012) - did not incorporate logic to create FRBRWork or FRBRExpression
+    collection relationships.
+:)
+
 
 module namespace marcxml2madsrdf = 'info:lc/id-modules/marcxml2madsrdf2#';
 
