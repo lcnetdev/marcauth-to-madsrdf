@@ -267,7 +267,7 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
     $baseuri as xs:string)
     as element(rdf:RDF)
 {
-
+    
     let $marc001 := fn:replace( $marcxml/marcxml:controlfield[@tag='001'] , ' ', '')
     
     (: LC Specific :)
@@ -320,13 +320,13 @@ declare function marcxml2madsrdf:marcxml2madsrdf(
     let $relations := 
         for $df in $marcxml/marcxml:datafield[fn:starts-with(@tag,'5')]|$marcxml/marcxml:datafield[fn:starts-with(@tag,'4') and marcxml:subfield[1]/@code="w"]
         return marcxml2madsrdf:create-relation($df)
-        
+    
     let $undiff :=
         if ( fn:substring($marcxml/marcxml:controlfield[@tag='008'], 33 ,1) eq 'b' and $scheme eq "names") then
             element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_NamesUndifferentiated'}
         }
-        else ()
+        else ()    
 
     (: Note - this could be LC specific :)
     let $df682 := $marcxml/marcxml:datafield[@tag='682'][1] (: can there ever be more than one? :)
@@ -781,10 +781,11 @@ declare function marcxml2madsrdf:create-relation(
             return marcxml2madsrdf:create-relation-body($reltype,$df,$auth)
         else 
             for $c at $pos in fn:string-to-codepoints($wstr)
-                let $w := fn:codepoints-to-string($c)
-                return 
+            let $w := fn:codepoints-to-string($c)
+            return 
                 if ($w ne "n" and $pos != 4) then
-                    let $reltype := $marcxml2madsrdf:relationTypeMap/type[@w=$w and @pos=$pos]/text()
+                    (: let $reltype := xs:string($marcxml2madsrdf:relationTypeMap/type[@w eq $w and @pos eq $pos][1]) :)
+                    let $reltype :=  xs:string($marcxml2madsrdf:relationTypeMap/type[@pos eq xs:string($pos) and @w eq $w][1])
                     return
                         if ($reltype ne "INVALID") then
                             let $auth :=
@@ -797,7 +798,8 @@ declare function marcxml2madsrdf:create-relation(
                         else 
                             ()
                 else if ($w ne "n" and $pos = 4) then
-                    let $reltype := $marcxml2madsrdf:relationTypeMap/type[@w=$w and @pos=$pos]/text()
+                    (: let $reltype := $marcxml2madsrdf:relationTypeMap/type[@w=$w and @pos=$pos]/text() :)
+                    let $reltype :=  xs:string($marcxml2madsrdf:relationTypeMap/type[@pos eq xs:string($pos) and @w eq $w][1]) 
                     return
                         if ($reltype ne "INVALID") then
                             let $auth :=
