@@ -45,7 +45,7 @@ declare option saxon:output "indent=yes";
 :   It is the base URI for the rdf:about attribute.
 :   
 :)
-declare variable $baseuri as xs:string := "http://base-uri/";
+declare variable $baseuri as xs:string external;
 
 (:~
 :   This variable is for the MARCXML location - externally defined.
