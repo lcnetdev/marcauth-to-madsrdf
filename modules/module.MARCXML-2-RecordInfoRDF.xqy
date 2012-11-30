@@ -98,11 +98,13 @@ declare function marcxml2recordinfo:marcxml2ri(
             
     let $marc008 := $marcxml/marcxml:controlfield[@tag='008']
     let $first2digits := fn:substring($marc008 , 1 , 2)
+    
     let $createdYear := 
         if (xs:integer($first2digits) gt 20) then  
             fn:concat('19' , $first2digits)
         else
             fn:concat('20' , $first2digits)
+            
     let $createdDT := fn:concat(
                     $createdYear,"-",
                     fn:substring($marc008, 3 , 2),"-",
