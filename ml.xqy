@@ -1,11 +1,11 @@
 xquery version "1.0";
 
 (:
-:   Module Name: View Authority
+:   Module Name: MARC/XML Auth 2 MADS RDF/XML using MarkLogic
 :
 :   Module Version: 1.0
 :
-:   Date: 2010 Oct 18
+:   Date: 2012 April 20
 :
 :   Copyright: Public Domain
 :
@@ -16,6 +16,7 @@ xquery version "1.0";
 :   Module Overview:     Displays authority records in a variety 
 :       of formats and serializations, based on parameters passed 
 :       to the xquery. 
+:
 :)
 
 (:~
@@ -57,30 +58,37 @@ declare variable $marcxmluri as xs:string := xdmp:get-request-field("marcxmluri"
 :)
 declare variable $model as xs:string := xdmp:get-request-field("model","madsrdf");
 
-let $marcxml := xdmp:document-get($marcxmluri)/marcxml:record
-let $response := 
-    if ($model eq "madsrdf") then
-        marcxml2madsrdf:marcxml2madsrdf($marcxml,$baseuri)
-    else if ($model eq "skos") then 
-        let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($marcxml,$baseuri)
-        return madsrdf2skos:madsrdf2skos($madsrdf)
-    else
-        let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($marcxml,$baseuri)
-        let $skos := madsrdf2skos:madsrdf2skos($madsrdf)
-        let $rdf := 
-            if ($madsrdf/child::node()[fn:name()][1]) then
-                element rdf:RDF {
-                    element {fn:name($madsrdf/child::node()[fn:name()][1])} {
-                        $madsrdf/child::node()[fn:name()][1]/@rdf:about,
-                        $madsrdf/child::node()[fn:name()][1]/child::node(),
-                        $skos/rdf:Description/child::node()
+let $marcxml := xdmp:document-get($marcxmluri)//marcxml:record
+let $resources :=
+    for $r in $marcxml
+    let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+    let $response :=  
+        if ($model eq "madsrdf") then
+            $madsrdf
+        else if ($model eq "skos") then 
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            return madsrdf2skos:madsrdf2skos($madsrdf)
+        else
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            let $skos := madsrdf2skos:madsrdf2skos($madsrdf)
+            let $rdf := 
+                if ($madsrdf/child::node()[fn:name()][1]) then
+                    element rdf:RDF {
+                        element {fn:name($madsrdf/child::node()[fn:name()][1])} {
+                            $madsrdf/child::node()[fn:name()][1]/@rdf:about,
+                            $madsrdf/child::node()[fn:name()][1]/child::node(),
+                            $skos/rdf:Description/child::node()
+                        }
                     }
-                }
-            else
-                <rdf:RDF />
-        return $rdf
-        
-return $response
+                else
+                    <rdf:RDF />
+            return $rdf
+    return $response/child::node()[fn:name()]
+    
+return
+    element rdf:RDF {
+        $resources
+    }
 
 
 
