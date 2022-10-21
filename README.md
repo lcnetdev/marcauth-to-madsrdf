@@ -19,7 +19,9 @@ and remove unwanted information or swap out URIs.
 
 First, set up 'config.sh':
 
-`cp bin/config-default.sh bin/config.sh`
+```bash
+cp bin/config-default.sh bin/config.sh
+```
 
 Modify `config.sh` to add location of JAVA_HOME and details about chosen
 executable.  For Saxon, this is the location of the Saxon Jar.  For MarkLogic,
@@ -27,7 +29,9 @@ the HTTP end point.
 
 Next, generically, the commands take the following form:
 
-`./bin/{executable}.sh {marcxml-file} {model}`
+```bash
+./bin/{executable}.sh {marcxml-file} {model}
+```
 
 `marcxml-file` is required.  It can be an absolute path, relative path, or HTTP 
 location.
@@ -37,22 +41,32 @@ location.
 
 ### Examples
 
-Saxon 
-`./bin/saxon.sh https://id.loc.gov/authorities/names/n94033669.marcxml.xml`
-`./bin/saxon.sh https://id.loc.gov/authorities/names/n94033669.marcxml.xml skos`
+**Saxon**
 
+```bash
+./bin/saxon.sh https://id.loc.gov/authorities/names/n94033669.marcxml.xml
+./bin/saxon.sh https://id.loc.gov/authorities/names/n94033669.marcxml.xml skos
+```
 
-ml.xqy - can be used with the MarkLogic Database and Application Server (http://community.marklogic.com/docs).  This expects an HTTP application server.  Set up an application server with the location of this package as the root and (purely as an example) go to 
-	http://hostname:port/ml.xqy?marcxmluri=http://location/of/marcxml.xml&model=both&baseuri=http://base-uri/
+**BaseX**
 
+```bash
+./bin/basex.sh data/no2021084916.marcxml.xml skos
+```
 
+**MarkLogic**
 
-Parameters (HTTP for ml.xqy; external for saxon.xqy; external for zorba.xqy):
+NB: The binary assumes the configuration details for a REST API server is defined
+in config.sh.  It will, each time it is run, add xquery files to the REST API modules
+database and delete them afterwards. 
 
-	marcxmluri - Path to MARC/XML file.  File can be retrieved over HTTP (begin http://) or from the filesystem.
-	model - expected values are: madsrdf, skos, all
-	baseuri - Base URI for generated resources. (For saxon, set within file
-	
+```bash
+./bin/ml.sh https://id.loc.gov/authorities/subjects/sh94003571.marcxml.xml
+```
+
+It is also possible to load the modules under `src` and the `process/ml-appserver.xqy` 
+to a modules database of your choosing. After which it can be accessed via a URL 
+like: http://hostname:port/ml-appserver.xqy?marcxmluri=http://location/of/marcxml.xml&model=both
 
 ## Changes
 
@@ -60,15 +74,16 @@ Parameters (HTTP for ml.xqy; external for saxon.xqy; external for zorba.xqy):
         Wholesale refactored repository.
         Copied, in all LC-specific glory, actual conversion files used behind ID.LOC.GOV.
         Zorba support discontinued. RIP Zorba.
+        baseuri no longer supported.
 
-	Nov 30 2012
-		Added missed subfields for Title output
-		Added support for Zorba
-		baseuri must be set externally for Saxon (and Zorba).
-		Small modification to MARCXML-2-MADSRDF to work with Zorba (original code caused seg fault)
+    Nov 30 2012
+        Added missed subfields for Title output
+        Added support for Zorba
+        baseuri must be set externally for Saxon (and Zorba).
+        Small modification to MARCXML-2-MADSRDF to work with Zorba (original code caused seg fault)
 	
-	April 2012
-		Initial publication.  Support for MarkLogic and Saxon
+    April 2012
+        Initial publication.  Support for MarkLogic and Saxon
 
 ## License
 As a work of the United States government, this project is in the
