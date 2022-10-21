@@ -29,8 +29,8 @@ xquery version "1.0";
 :)
 
 (: IMPORTED MODULES :)
-import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "modules/module.MARCXML-2-MADSRDF.xqy";
-import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "modules/module.MADSRDF-2-SKOS.xqy";
+import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "../modules/module.MARCXML-2-MADSRDF.xqy";
+import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "../modules/module.MADSRDF-2-SKOS.xqy";
 
 (: NAMESPACES :)
 declare namespace xdmp  = "http://marklogic.com/xdmp";

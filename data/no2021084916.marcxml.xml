@@ -1,0 +1,95 @@
+<marcxml:record xmlns:marcxml="http://www.loc.gov/MARC21/slim" xmlns:mets="http://www.loc.gov/METS/" xmlns:bf="http://id.loc.gov/ontologies/bibframe/" xmlns:bflc="http://id.loc.gov/ontologies/bflc/" xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ri="http://id.loc.gov/ontologies/RecordInfo#" xmlns:idx="info:lc/xq-modules/lcindex" xmlns:semtriples="http://marklogic.com/semantic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <marcxml:leader xmlns:streams="info:lc/streams#">02012nz  a2200361n  4500</marcxml:leader>
+  <marcxml:controlfield tag="001">no2021084916</marcxml:controlfield>
+  <marcxml:controlfield tag="003" xmlns:streams="info:lc/streams#">DLC</marcxml:controlfield>
+  <marcxml:controlfield tag="005" xmlns:streams="info:lc/streams#">20210720064514.0</marcxml:controlfield>
+  <marcxml:controlfield tag="008" xmlns:streams="info:lc/streams#">210719n| azannaabn          |a ana     c</marcxml:controlfield>
+  <marcxml:datafield tag="010" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">no2021084916</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="034" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="d">W1182234</marcxml:subfield>
+    <marcxml:subfield code="e">W1181502</marcxml:subfield>
+    <marcxml:subfield code="f">N0375305</marcxml:subfield>
+    <marcxml:subfield code="g">N0375229</marcxml:subfield>
+    <marcxml:subfield code="2">gnis</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="035" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">(OCoLC)oca13847101</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="040" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">NvU</marcxml:subfield>
+    <marcxml:subfield code="b">eng</marcxml:subfield>
+    <marcxml:subfield code="e">rda</marcxml:subfield>
+    <marcxml:subfield code="c">NvU</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="043" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">n-us-nv</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="046" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="s">1862</marcxml:subfield>
+    <marcxml:subfield code="2">edtf</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="151" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Buena Vista Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="368" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="b">Mining districts</marcxml:subfield>
+    <marcxml:subfield code="2">lcsh</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="370" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="e">Esmeralda County (Nev.)</marcxml:subfield>
+    <marcxml:subfield code="2">naf</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="370" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="e">Mineral County (Nev.)</marcxml:subfield>
+    <marcxml:subfield code="2">naf</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="370" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="e">Mono County (Calif.)</marcxml:subfield>
+    <marcxml:subfield code="2">naf</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="372" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Mineral industries</marcxml:subfield>
+    <marcxml:subfield code="2">lcsh</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Mount Montgomery Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Oneota Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Queens Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Oneata Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Montgomery Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Montgomery Pass Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">White Mountain Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="451" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">White Mountains Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="551" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Basalt Mining District (Nev.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="670" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">GNIS, viewed 21 June 2021</marcxml:subfield>
+    <marcxml:subfield code="b">(Buena Vista Mining District, Esmeralda County, Nevada, Mineral County, Nevada, Mono County, California, 375305N ; 1181915W , 375231N ; 1181502W , 375231N ; 1182234W , 375229N ; 1182234W , 375229N ; 1182232W , 375229N ; 1181502W, variant names: Basalt Mining District, Mount Montgomery Mining District, Oneota Mining District, Queens Mining District.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="670" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Tingley, Joseph V., Mining districts of Nevada, 1992:</marcxml:subfield>
+    <marcxml:subfield code="b">page 17 (Buena Vista; county: Esmeralda, Mineral ; other names:  Oneota, Oneata, Basalt, Mount Montgomery, Montgomery, Montgomery Pass, Queens, White Mountain, White Mountains; discovered: 1862 ; commodities: silver, gold, lead, copper, zinc, tungsten, flourspar, thorium and rare earths. The Basalt diatomite area, east of Montgomery Pass and sometimes included in this district, is considered to be a seperate district.)</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="781" ind1=" " ind2="0" xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="z">Nevada</marcxml:subfield>
+    <marcxml:subfield code="z">Buena Vista Mining District</marcxml:subfield>
+  </marcxml:datafield>
+</marcxml:record>

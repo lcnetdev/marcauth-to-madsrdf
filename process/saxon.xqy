@@ -28,8 +28,8 @@ xquery version "1.0";
 :)
 
 (: IMPORTED MODULES :)
-import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "modules/module.MARCXML-2-MADSRDF.xqy";
-import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "modules/module.MADSRDF-2-SKOS.xqy";
+import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "../modules/module.MARCXML-2-MADSRDF.xqy";
+import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "../modules/module.MADSRDF-2-SKOS.xqy";
 
 (: NAMESPACES :)
 declare namespace saxon = "http://saxon.sf.net/";
@@ -57,18 +57,18 @@ declare variable $marcxmluri as xs:string external;
 :)
 declare variable $model as xs:string external;
 
-let $marcxml := fn:doc($marcxmluri)//marcxml:record
+let $marcxml := //marcxml:record
 let $resources :=
     for $r in $marcxml
-    let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+    let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
     let $response :=  
         if ($model eq "madsrdf") then
             $madsrdf
         else if ($model eq "skos") then 
-            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
             return madsrdf2skos:madsrdf2skos($madsrdf)
         else
-            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
             let $skos := madsrdf2skos:madsrdf2skos($madsrdf)
             let $rdf := 
                 if ($madsrdf/child::node()[fn:name()][1]) then

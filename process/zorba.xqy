@@ -36,8 +36,8 @@ import module namespace file            =   "http://expath.org/ns/file";
 import module namespace parsexml        =   "http://www.zorba-xquery.com/modules/xml";
 import schema namespace parseoptions    =   "http://www.zorba-xquery.com/modules/xml-options";
 
-import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "modules/module.MARCXML-2-MADSRDF.xqy";
-import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "modules/module.MADSRDF-2-SKOS.xqy";
+import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "../modules/module.MARCXML-2-MADSRDF.xqy";
+import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "../modules/module.MADSRDF-2-SKOS.xqy";
 
 (: NAMESPACES :)
 declare namespace marcxml   = "http://www.loc.gov/MARC21/slim";

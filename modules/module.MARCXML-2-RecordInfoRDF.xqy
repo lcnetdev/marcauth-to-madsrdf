@@ -36,7 +36,7 @@ declare namespace rdf                   = "http://www.w3.org/1999/02/22-rdf-synt
 declare namespace ri                    = "http://id.loc.gov/ontologies/RecordInfo#";
 declare namespace madsrdf				= "http://www.loc.gov/mads/rdf/v1#";
 declare namespace rdfs					= "http://www.w3.org/2000/01/rdf-schema#";
-import module namespace constants           = "info:lc/id-modules/constants#" at "../constants.xqy";
+
 (: FUNCTIONS :)
 (:
 -------------------------
