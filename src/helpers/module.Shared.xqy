@@ -28,20 +28,6 @@ xquery version "1.0";
 module namespace shared = 'info:lc/id-modules/shared#';
 
 (:~
-:   This function normalizes an authoritativeLabel to either be 
-:   inserted into a BF resource or used by a MADS resource to find a related
-:   BF resource. 
-:
-:   @param  $label      as xs:string is the label/string to be normalized
-:   @return xs:string  label normalized
-:)
-declare function shared:normalize-label($label as xs:string) as xs:string {
-    let $label-normalized := fn:replace(fn:normalize-space(fn:lower-case($label)), " ", "")
-    let $label-normalized := fn:replace($label-normalized, "[ ,\-\.]+", "")
-    return $label-normalized
-};
-
-(:~
 :   This function validate URIs 
 :   Regex was adapted from: https://stackoverflow.com/a/30910/10580173
 :
