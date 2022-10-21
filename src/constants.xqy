@@ -30,9 +30,11 @@ xquery version "1.0";
 
 module namespace constants = 'info:lc/id-modules/constants#'; 
 
-declare namespace xdmp = "http://marklogic.com/xdmp";
-
+import module namespace constants-namespace = "info:lc/id-modules/constants-namespace#" at "constants/constants-namespace.xqy";
 import module namespace constants-mads2skosmap = "info:lc/id-modules/constants-mads2skosmap#" at "constants/constants-mads2skosmap.xqy";
+
+(: Namespace mapping :)
+declare variable $constants:NSMAP := $constants-namespace:NSMAP;
 
 (:~
 :   This variable records the MADS 2 SKOS mapping.

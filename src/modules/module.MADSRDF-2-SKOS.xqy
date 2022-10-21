@@ -38,7 +38,7 @@ declare namespace   dcterms             = "http://purl.org/dc/terms/";
 declare namespace   cs                  = "http://purl.org/vocab/changeset/schema#";
 declare namespace   vs                  = "http://www.w3.org/2003/06/sw-vocab-status/ns#";
 
-import module namespace constants   = "info:lc/id-modules/constants#" at "constants.xqy";
+import module namespace constants   = "info:lc/id-modules/constants#" at "../constants.xqy";
 
 (:~
 :   This is the main function.  It converts MADS/RDF to 

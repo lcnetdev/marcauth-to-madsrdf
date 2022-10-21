@@ -28,8 +28,8 @@ xquery version "1.0";
 :)
 
 (: IMPORTED MODULES :)
-import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf2#" at "../modules/module.MARCXML-2-MADSRDF.xqy";
-import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "../modules/module.MADSRDF-2-SKOS.xqy";
+import module namespace marcxml2madsrdf = "info:lc/id-modules/marcxml2madsrdf#" at "../src/modules/module.MARCXML-2-MADSRDF.xqy";
+import module namespace madsrdf2skos    = "info:lc/id-modules/madsrdf2skos#" at "../src/modules/module.MADSRDF-2-SKOS.xqy";
 
 (: NAMESPACES :)
 declare namespace saxon = "http://saxon.sf.net/";
@@ -41,13 +41,6 @@ declare namespace rdf       = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare option saxon:output "indent=yes";
 
 (:~
-:   This variable is for the base uri for your Authorites/Concepts.
-:   It is the base URI for the rdf:about attribute.
-:   
-:)
-declare variable $baseuri as xs:string external;
-
-(:~
 :   This variable is for the MARCXML location - externally defined.
 :)
 declare variable $marcxmluri as xs:string external;
@@ -57,7 +50,7 @@ declare variable $marcxmluri as xs:string external;
 :)
 declare variable $model as xs:string external;
 
-let $marcxml := //marcxml:record
+let $marcxml := fn:doc($marcxmluri)//marcxml:record
 let $resources :=
     for $r in $marcxml
     let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)

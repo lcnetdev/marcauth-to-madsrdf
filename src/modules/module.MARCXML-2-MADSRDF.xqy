@@ -55,7 +55,7 @@ module namespace  marcxml2madsrdf      = "info:lc/id-modules/marcxml2madsrdf#";
 
 (: MODULES :)
 import module namespace marcxml2recordinfo = "info:lc/id-modules/recordInfoRDF#" at "module.MARCXML-2-RecordInfoRDF.xqy";
-import module namespace shared             = 'info:lc/id-modules/shared#' at "module.Shared.xqy";
+import module namespace shared             = 'info:lc/id-modules/shared#' at "../helpers/module.Shared.xqy";
  
 (: NAMESPACES :)
 declare namespace marcxml       = "http://www.loc.gov/MARC21/slim";
