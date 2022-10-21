@@ -17,7 +17,15 @@ and remove unwanted information or swap out URIs.
 
 ## Running
 
-Generically, the commands take the following form:
+First, set up 'config.sh':
+
+`cp bin/config-default.sh bin/config.sh`
+
+Modify `config.sh` to add location of JAVA_HOME and details about chosen
+executable.  For Saxon, this is the location of the Saxon Jar.  For MarkLogic,
+the HTTP end point.
+
+Next, generically, the commands take the following form:
 
 `./bin/{executable}.sh {marcxml-file} {model}`
 
