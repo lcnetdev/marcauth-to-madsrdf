@@ -9,6 +9,12 @@ JAVA_HOME=/path/to/java/directory
 JAVA_BIN=$JAVA_HOME/bin/java
 SAXONHE=/path/to/saxon/jar
 
+BASEX_EXEC=/path/to/basex/executable
+
+MLHOSTPORT=http://localhost:8000
+MLUSER=user
+MLPASS=pass
+
 #### 
 # THE FOLLOWING CAN BE IGNORED.  THEY ARE COMMON TO ALL THE EXECUTABLES.
 ####

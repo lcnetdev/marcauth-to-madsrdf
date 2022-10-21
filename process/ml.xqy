@@ -42,13 +42,6 @@ declare namespace rdf       = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare option xdmp:output "indent-untyped=yes" ; 
 
 (:~
-:   This variable is for the base uri for your Authorites/Concepts.
-:   It is the base URI for the rdf:about attribute.
-:   
-:)
-declare variable $baseuri as xs:string := xdmp:get-request-field("baseuri","http://base-uri/");
-
-(:~
 :   This variable is for the MARCXML location - externally defined.
 :)
 declare variable $marcxmluri as xs:string := xdmp:get-request-field("marcxmluri","");
@@ -61,15 +54,15 @@ declare variable $model as xs:string := xdmp:get-request-field("model","madsrdf"
 let $marcxml := xdmp:document-get($marcxmluri)//marcxml:record
 let $resources :=
     for $r in $marcxml
-    let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+    let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
     let $response :=  
         if ($model eq "madsrdf") then
             $madsrdf
         else if ($model eq "skos") then 
-            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
             return madsrdf2skos:madsrdf2skos($madsrdf)
         else
-            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r,$baseuri)
+            let $madsrdf := marcxml2madsrdf:marcxml2madsrdf($r)
             let $skos := madsrdf2skos:madsrdf2skos($madsrdf)
             let $rdf := 
                 if ($madsrdf/child::node()[fn:name()][1]) then
