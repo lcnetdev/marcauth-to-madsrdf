@@ -56,9 +56,12 @@ location.
 
 **MarkLogic**
 
-NB: The binary assumes the configuration details for a REST API server is defined
-in config.sh.  It will, each time it is run, add xquery files to the REST API modules
-database and delete them afterwards. 
+*Warning*: The MarkLogic bash script in this package will write to a REST API modules 
+database. Each time it is run, it will add xquery files to the REST API modules
+database and delete them afterwards. This is a write/read/delete operation to a 
+database; bear this in mind.
+
+Correct MarkLogic connection information needs to be defined in `config.sh`.  
 
 ```bash
 ./bin/ml.sh https://id.loc.gov/authorities/subjects/sh94003571.marcxml.xml
