@@ -67,6 +67,7 @@ declare namespace owl           = "http://www.w3.org/2002/07/owl#";
 declare namespace identifiers   = "http://id.loc.gov/vocabulary/identifiers/";
 declare namespace skos          = "http://www.w3.org/2004/02/skos/core#";
 declare namespace bf   			= "http://id.loc.gov/ontologies/bibframe/";
+declare namespace bflc   			= "http://id.loc.gov/ontologies/bflc/";
 declare namespace geosparql     = "http://www.opengis.net/ont/geosparql";
 declare namespace functx        = "http://www.functx.com";
 declare namespace xdmp      = "http://marklogic.com/xdmp";
@@ -558,7 +559,7 @@ as element(rdf:RDF)
     let $df1xx_sf_counts := fn:count($df1xx/marcxml:subfield)
     let $df1xx_sf_two_code := $df1xx/marcxml:subfield[2]/@code
     let $authoritativeLabel := marcxml2madsrdf:generate-label($df1xx,$df1xx_suffix)
-    let $bfMarcKey := marcxml2madsrdf:generate-marcKey($df1xx)
+    let $bflcMarcKey := marcxml2madsrdf:generate-marcKey($df1xx)
                 
     let $authorityType := 
 			if ($scheme="demographicTerms") then
@@ -1098,7 +1099,7 @@ as element(rdf:RDF)
 					
                     $componentList,
                     $elementList,
-                    $bfMarcKey,
+                    $bflcMarcKey,
                     $classification,
                     $kind_of_record,
                     $subdivision_type,
@@ -2465,19 +2466,19 @@ declare function marcxml2madsrdf:generate-label($df as element(), $df_suffix as 
 };
 
 (:~
-:   This function creates a BF marcKey property.
+:   This function creates a BFLC marcKey property.
 :
 :   @param  $df         marcxml datafield element
 :   @return specially formatted marc key string
 :)
-declare function marcxml2madsrdf:generate-marcKey($df as element()) as element(bf:marcKey) {
+declare function marcxml2madsrdf:generate-marcKey($df as element()) as element(bflc:marcKey) {
     let $f := xs:string($df/@tag)
     let $ind1 := xs:string($df/@ind1)
     let $ind2 := xs:string($df/@ind2)
     let $subfields :=
         for $sf in $df/marcxml:subfield
         return fn:concat('$', xs:string($sf/@code), xs:string($sf))
-    return element bf:marcKey { fn:concat($f, $ind1, $ind2, fn:string-join($subfields, '')) }
+    return element bflc:marcKey { fn:concat($f, $ind1, $ind2, fn:string-join($subfields, '')) }
 };
 
 (:~
