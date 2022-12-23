@@ -1970,69 +1970,78 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                             }}
                     else ()
                     ),
-            for $df in $df368 
-		   	  let $source:=if ($df/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2']),") ") else ("")
-              return
-                ( for $sf in $df/marcxml:subfield[fn:matches(@code,'(a|b|c)')]
-                    return element madsrdf:entityDescriptor {
-                             element skos:Concept {
-                                element rdfs:label {fn:concat($source,$sf/text())},  
-                                for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                return 
-                                   element madsrdf:hasSource {
-                                     element madsrdf:Source{
-                                       element rdfs:label {$sf/text()}
-                                   }}
-                              }},                      
-                  for $sf in $df/marcxml:subfield[@code='d']
-                    return element madsrdf:honoraryTitle {
-                             element skos:Concept {
-                                element rdfs:label {fn:concat($source,$sf/text())},  
-                                for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                return 
-                                   element madsrdf:hasSource {
-                                     element madsrdf:Source{
-                                       element rdfs:label {$sf/text()}
-                                   }}
-                              }}
-                ),
-            for $df in $df370
-            let $source:=if ($df/marcxml:subfield[@code='2'][1]) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2'][1]),") ") else ("")
-                return
-    				(for $sf in $df/marcxml:subfield[@code='a']
-                        return element madsrdf:birthPlace { 
-                            element madsrdf:Geographic {
-                                    element rdfs:label {fn:concat($source,$sf/text())},
-                                    for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
-                                        element madsrdf:hasSource {
-                                            element madsrdf:Source{
-                                                element rdfs:label {$sf/text()}
-                                        }}
-                            }},
-                     for $sf in $df/marcxml:subfield[@code='b']
-                        return element madsrdf:deathPlace { 
-                            element madsrdf:Geographic {
-                                    element rdfs:label {fn:concat($source,$sf/text())},
-                                    for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
-                                        element madsrdf:hasSource {
-                                            element madsrdf:Source{
-                                                element rdfs:label {$sf/text()}
-                                        }}
-                            }},
-     				for $sf in $df/marcxml:subfield[fn:matches(@code,'(c|e|f)')]
-                         return element madsrdf:associatedLocale { 
-                            element madsrdf:Geographic {
-                                    element rdfs:label {fn:concat($source,$sf/text())},
-                                    for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
-                                        element madsrdf:hasSource {
-                                            element madsrdf:Source{
-                                                element rdfs:label {$sf/text()}
-                                        }}
-                            }}
-                    ),
+            
+            (: 368 :)
+            for $df in $df368[marcxml:subfield[fn:matches(@code, "[abcd]")]]
+            let $source :=
+                if ($df/marcxml:subfield[@code='2'][1] = 'lcsh') then
+                    element madsrdf:isMemberOfMADSScheme {
+                        attribute rdf:resource {"http://id.loc.gov/authorities/subjects"}
+                    }
+                else
+                    ()
+            let $sfContent := $df/marcxml:subfield[fn:matches(@code, "[abcd]")][1]
+            let $code := xs:string($sfContent/@code)
+            let $elementName := 
+                if ( $code eq "d" ) then
+                    "madsrdf:honoraryTitle"
+                else
+                    "madsrdf:entityDescriptor"
+            return
+                element {$elementName} {
+                    element skos:Concept {
+                        if ($df/marcxml:subfield[@code='0'][1] != '') then
+                            attribute rdf:about { xs:string($df/marcxml:subfield[@code='0'][1]) }
+                        else
+                            ()
+                        ,
+                        element rdfs:label { xs:string($sfContent) },
+                        if ($df/marcxml:subfield[@code='1'][1] = '') then
+                            $source
+                        else
+                            ()
+                    }
+                },
+
+            (: 370 :)
+            for $df in $df370[marcxml:subfield[fn:matches(@code, "[abcef]")]]
+            let $source :=
+                if (fn:not(fn:exists($df/marcxml:subfield[@code='0'][1])) and $df/marcxml:subfield[@code='2'][1] = 'naf') then
+                    element madsrdf:isMemberOfMADSScheme {
+                        attribute rdf:resource {"http://id.loc.gov/authorities/names"}
+                    }
+                else
+                    ()
+            let $sfContent := $df/marcxml:subfield[fn:matches(@code, "[abcef]")][1]
+            let $code := xs:string($sfContent/@code)
+            let $elementName := 
+                if ( $code eq "a" ) then
+                    "madsrdf:birthPlace"
+                else if ( $code eq "a" ) then
+                    "madsrdf:deathPlace"
+                else
+                    "madsrdf:associatedLocale"
+            return
+                element {$elementName} {
+                    element madsrdf:Geographic {
+                        if ($df/marcxml:subfield[@code='1'][1] != '') then
+                            attribute rdf:about { xs:string($df/marcxml:subfield[@code='1'][1]) }
+                        else if ($df/marcxml:subfield[@code='0'][1] != '') then
+                            (
+                                attribute rdf:about { xs:string($df/marcxml:subfield[@code='0'][1]) },
+                                $source
+                            )
+                        else
+                            $source
+                        ,
+                        element rdfs:label { xs:string($sfContent) },
+                        if ($df/marcxml:subfield[@code='1'][1] = '' and $df/marcxml:subfield[@code='0'][1] != '') then
+                            $source
+                        else
+                            ()
+                    }
+                },
+
             for $sf in $df371
              return
                    element madsrdf:hasAffiliation {
@@ -2452,7 +2461,7 @@ declare function marcxml2madsrdf:generate-label($df as element(), $df_suffix as 
                 else ""
             )   
         else
-            fn:string-join($df/marcxml:subfield[@code ne 'w'  and @code ne '6'  and @code ne '8' and @code ne '0' and @code ne '1'] , '--')
+            fn:string-join($df/marcxml:subfield[fn:not(fn:matches(@code, "[wi01468]"))] , '--')
             (:      let $label := fn:string-join($df/marcxml:subfield[@code ne 'w' and @code ne '6'] , '--')
               let $label := 
                 if ( fn:ends-with($label, ".") ) then
