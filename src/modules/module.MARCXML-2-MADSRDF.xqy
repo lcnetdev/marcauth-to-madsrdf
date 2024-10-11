@@ -13,34 +13,34 @@ xquery version "1.0";
 :
 :   Xquery Specification: January 2007
 :
-:   Module Overview:    Primary purpose is to transform MARCXML 
-:       authority to MADSRDF.  This will result in a verbose 
+:   Module Overview:    Primary purpose is to transform MARCXML
+:       authority to MADSRDF.  This will result in a verbose
 :       MADS/RDF record, and one without any linked relationships.
 :
 : Change Log:
-	2012 Aug 28 Nate Trail added collection for undifferentiated names (008/32='b') 
+	2012 Aug 28 Nate Trail added collection for undifferentiated names (008/32='b')
 	2012 Sep 12 Nate Trail added collection for FRBR Work and FRBR Expression, and changed the "may subdivide Geographically" label and name
 	2012 Sep 20 Nate Trail added collection for FRBR Expression for musical arrangements
 	2012 Oct 16 Nate Trail suppressed $6 from labels (880 mapping)
-	
+
 	2015 March 30 Nate Trail added useFor
 	2015 April 22 Nate Trail added untracedReferences for subjects: sh93002523
-	2015 July 27 Qi Tong added and modified madsrdf elements for RWO: 
-	               birthdate, deathdate, birthplace, deathplace, entityDescriptor, honoraryTitle, associatedLocale, 
+	2015 July 27 Qi Tong added and modified madsrdf elements for RWO:
+	               birthdate, deathdate, birthplace, deathplace, entityDescriptor, honoraryTitle, associatedLocale,
 	               occupation, gender, prominentFamilyMember, assocatedLanguage, hasAffiliation
 	2015 August 20 Qi Tong added madsrdf:fullerName
-	
-	2016 Dec 11 - Kevin Ford - Resource that is the object of hasEarlierEstablishedForm changed 
-	            from being a Variant to an Authority.  I believe most - if not all - "hasEarlierEstablishedForm" 
+
+	2016 Dec 11 - Kevin Ford - Resource that is the object of hasEarlierEstablishedForm changed
+	            from being a Variant to an Authority.  I believe most - if not all - "hasEarlierEstablishedForm"
 	            relationships are in Names.  Those Name resources remain valid for assignment usually.
-		
+
 		NOTICE ! ALL CHANGES TO SUBJECTS SHOULD BE COPIED INTO THE VERSION IN MARCBIB2BIBFRAME,
 :			WHICH USES IT TO CREATE BF:TOPIC etc.
 :
 :
 :
 :)
-   
+
 (:~
 :   This module transforms a MARCXML authority to MADSRDF.  This
 :   will result in a verbose MADS/RDF record, and one without any
@@ -52,12 +52,18 @@ xquery version "1.0";
 :)
 module namespace  marcxml2madsrdf      = "info:lc/id-modules/marcxml2madsrdf#";
 
+(:Debug MODUELS
+import module namespace file            =   "http://expath.org/ns/file";
+:)
 
 (: MODULES :)
 import module namespace constants-countries-gacs           = "info:lc/id-modules/constants-countries-gacs#" at "../constants/constants-countries-gacs.xqy";
 import module namespace marcxml2recordinfo = "info:lc/id-modules/recordInfoRDF#" at "module.MARCXML-2-RecordInfoRDF.xqy";
 import module namespace shared             = 'info:lc/id-modules/shared#' at "../helpers/module.Shared.xqy";
- 
+import module namespace sharedml            = 'info:lc/id-modules/sharedml#' at "../helpers/module.SharedML.xqy";
+
+import module namespace constants-languages = "info:lc/id-modules/constants-languages#" at "../constants/constants-languages.xqy";
+
 (: NAMESPACES :)
 declare namespace marcxml       = "http://www.loc.gov/MARC21/slim";
 declare namespace madsrdf       = "http://www.loc.gov/mads/rdf/v1#";
@@ -84,10 +90,10 @@ declare variable $marcxml2madsrdf:authSchemeMap := (
             <authScheme abbrev="genreForms">authorities/genreForms/</authScheme>
             <authScheme abbrev="names">authorities/names/</authScheme>
             <authScheme abbrev="performanceMediums">authorities/performanceMediums/</authScheme>
-			<authScheme abbrev="demographicTerms">authorities/demographicTerms/</authScheme>			
+			<authScheme abbrev="demographicTerms">authorities/demographicTerms/</authScheme>
             <authScheme abbrev="empty">authorities/empty/</authScheme>
         </authSchemeMaps>
-    ); 
+    );
 (:http://www.loc.gov/standards/valuelist/lcdgt.html:)
 declare variable $marcxml2madsrdf:dgtCategoryMap := (
         <dgtCategoryMaps>
@@ -95,13 +101,13 @@ declare variable $marcxml2madsrdf:dgtCategoryMap := (
             <dgtCategory code="edu">collection_LCDGT_Educational</dgtCategory>
             <dgtCategory code="eth">collection_LCDGT_Ethnic</dgtCategory>
             <dgtCategory code="gdr">collection_LCDGT_Gender</dgtCategory>
-            <dgtCategory code="lng">collection_LCDGT_Language</dgtCategory> 
-			<dgtCategory code="mpd">collection_LCDGT_Medical</dgtCategory>	
-			<dgtCategory code="nat">collection_LCDGT_Nationality</dgtCategory>			
+            <dgtCategory code="lng">collection_LCDGT_Language</dgtCategory>
+			<dgtCategory code="mpd">collection_LCDGT_Medical</dgtCategory>
+			<dgtCategory code="nat">collection_LCDGT_Nationality</dgtCategory>
             <dgtCategory code="occ">collection_LCDGT_Occupational</dgtCategory>
             <dgtCategory code="rel">collection_LCDGT_Religion</dgtCategory>
             <dgtCategory code="sxo">collection_LCDGT_Sexual</dgtCategory>
-            <dgtCategory code="soc">collection_LCDGT_Social</dgtCategory>            
+            <dgtCategory code="soc">collection_LCDGT_Social</dgtCategory>
         </dgtCategoryMaps>
     );
 (:http://id.loc.gov/authorities/names/no2007025470.marcxml.xml:)
@@ -109,52 +115,52 @@ declare variable $marcxml2madsrdf:authTypeMap := (
     <authTypeMaps>
         <type tag="100" count="1" code="a" variant="madsrdf:PersonalName">madsrdf:PersonalName</type>
         <type tag="100" count="2" code="cdgq" variant="madsrdf:PersonalName">madsrdf:PersonalName</type>
-        <type tag="100" count="2" code="t" variant="madsrdf:NameTitle">madsrdf:NameTitle</type> (: Would title ever not be in the second position?  Is it still an NT when there is a third term, a form subdivision? :)                  
+        <type tag="100" count="2" code="t" variant="madsrdf:NameTitle">madsrdf:NameTitle</type> (: Would title ever not be in the second position?  Is it still an NT when there is a third term, a form subdivision? :)
         <type tag="100" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="110" count="1" code="a" variant="madsrdf:CorporateName">madsrdf:CorporateName</type>
         <type tag="110" count="2" code="bcdg" variant="madsrdf:CorporateName">madsrdf:CorporateName</type>
         <type tag="110" count="2" code="t" variant="madsrdf:NameTitle">madsrdf:NameTitle</type> (: this implies that t is the second component :)
         <type tag="110" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="111" count="1" code="a" variant="madsrdf:ConferenceName">madsrdf:ConferenceName</type>
         <type tag="111" count="2" code="cdgq" variant="madsrdf:ConferenceName">madsrdf:ConferenceName</type>
         <type tag="111" count="2" code="t" variant="madsrdf:NameTitle">madsrdf:NameTitle</type>
         <type tag="111" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="130" equivalent="t" count="1" code="a" variant="madsrdf:Title">madsrdf:Title</type> (: UniformTitle - this could have any number of code fields in it :)
         <type tag="130" count="2" code="d" variant="madsrdf:Title">madsrdf:Title</type> (: UniformTitle - this could have any number of code fields in it :)
         <type tag="130" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type> (: UniformTitle - this could have any number of code fields in it :)
-        
+
         <type tag="148" equivalent="y" count="1" code="a" variant="madsrdf:Temporal">madsrdf:Temporal</type>
         <type tag="148" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type> (: loads of codes :)
-        
+
         <type tag="150" equivalent="x" count="1" code="a" variant="madsrdf:Topic">madsrdf:Topic</type>
         <type tag="150" count="2" code="bvxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
-        
+
         <type tag="151" equivalent="z" count="1" code="a" variant="madsrdf:Geographic">madsrdf:Geographic</type>
         <type tag="151" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
-        
+
         <type tag="155" equivalent="v" count="1" code="a" variant="madsrdf:GenreForm">madsrdf:GenreForm</type>
         <type tag="155" equivalent="p" count="1" variant="madsrdf:GenreForm">madsrdf:GenreForm</type>
         <type tag="155" count="2" code="vxyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
-        
+
         <type tag="162" count="1" code="a" variant="madsrdf:Medium">madsrdf:Medium</type>
-        
+
         <type tag="180" count="1" code="x" variant="madsrdf:Topic">madsrdf:Topic</type>
         <type tag="180" count="2" code="vyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
 
         <type tag="181" count="1" code="z" variant="madsrdf:Geographic">madsrdf:Geographic</type>
         <type tag="181" count="2" code="z" variant="madsrdf:HierarchicalGeographic">madsrdf:HierarchicalGeographic</type>
         <type tag="181" count="2" code="vxy" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
-        
+
         <type tag="182" count="1" code="y" variant="madsrdf:Temporal">madsrdf:Temporal</type>
         <type tag="182" count="2" code="vxz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
-        
+
         <type tag="185" count="1" code="v" variant="madsrdf:GenreForm">madsrdf:GenreForm</type>
         <type tag="185" count="2" code="xyz" variant="madsrdf:ComplexSubject">madsrdf:ComplexSubject</type>
     </authTypeMaps>);
-    
+
 declare variable $marcxml2madsrdf:elementTypeMap := (
     <elementTypeMaps>
         <elementType tag_suffix="00" code="a">madsrdf:FullNameElement</elementType>
@@ -178,7 +184,7 @@ declare variable $marcxml2madsrdf:elementTypeMap := (
         <elementType tag_suffix="00" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="00" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="00" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="10" code="a">madsrdf:NameElement</elementType>
         <elementType tag_suffix="10" code="a" ancillary="b">madsrdf:NameElement</elementType>
         <elementType tag_suffix="10" code="a" ancillary="d">madsrdf:DateNameElement</elementType>
@@ -196,7 +202,7 @@ declare variable $marcxml2madsrdf:elementTypeMap := (
         <elementType tag_suffix="10" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="10" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="10" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="11" code="a">madsrdf:NameElement</elementType>
         <elementType tag_suffix="11" code="a" ancillary="c">madsrdf:GeographicElement</elementType>
         <elementType tag_suffix="11" code="a" ancillary="d">madsrdf:DateNameElement</elementType>
@@ -212,7 +218,7 @@ declare variable $marcxml2madsrdf:elementTypeMap := (
         <elementType tag_suffix="11" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="11" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="11" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="30" code="a">madsrdf:MainTitleElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="d">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="30" code="a" ancillary="f">madsrdf:TemporalElement</elementType>
@@ -226,53 +232,53 @@ declare variable $marcxml2madsrdf:elementTypeMap := (
         <elementType tag_suffix="30" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="30" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="30" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="48" code="a">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="48" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="48" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="48" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="48" code="z">madsrdf:GeographicElement</elementType>
-                
+
         <elementType tag_suffix="50" code="a">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="50" code="a" ancillary="b">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="50" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="50" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="50" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="50" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="51" code="a">madsrdf:GeographicElement</elementType>
         <elementType tag_suffix="51" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="51" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="51" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="51" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="55" code="a">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="55" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="55" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="55" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="55" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="62" code="a">madsrdf:MediumElement</elementType>
-        
+
         <elementType tag_suffix="80" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="80" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="80" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="80" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="81" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="81" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="81" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="81" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="82" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="82" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="82" code="y">madsrdf:TemporalElement</elementType>
         <elementType tag_suffix="82" code="z">madsrdf:GeographicElement</elementType>
-        
+
         <elementType tag_suffix="85" code="x">madsrdf:TopicElement</elementType>
         <elementType tag_suffix="85" code="v">madsrdf:GenreFormElement</elementType>
         <elementType tag_suffix="85" code="y">madsrdf:TemporalElement</elementType>
-        <elementType tag_suffix="85" code="z">madsrdf:GeographicElement</elementType>      
+        <elementType tag_suffix="85" code="z">madsrdf:GeographicElement</elementType>
     </elementTypeMaps>);
 
 declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
@@ -292,7 +298,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="10" count="1" subfield="a">
             <authority>madsrdf:CorporateName</authority>
             <variant>madsrdf:CorporateName</variant>
@@ -309,7 +315,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="11" count="1" subfield="a">
             <authority>madsrdf:ConferenceName</authority>
             <variant>madsrdf:ConferenceName</variant>
@@ -326,7 +332,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="30" count="1" subfield="a" variant_subfield="t"> (: UniformTitle - this could have any number of code fields in it :)
             <authority>madsrdf:Title</authority>
             <variant>madsrdf:Title</variant>
@@ -343,7 +349,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="48" count="1" subfield="a" variant_subfield="y">
             <authority>madsrdf:Temporal</authority>
             <variant>madsrdf:Temporal</variant>
@@ -352,7 +358,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="50" count="1" subfield="a" variant_subfield="x">
             <authority>madsrdf:Topic</authority>
             <variant>madsrdf:Topic</variant>
@@ -361,7 +367,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="51" count="1" subfield="a" variant_subfield="z">
             <authority>madsrdf:Geographic</authority>
             <variant>madsrdf:Geographic</variant>
@@ -370,7 +376,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="55" count="1" subfield="a" variant_subfield="vpk">
             <authority>madsrdf:GenreForm</authority>
             <variant>madsrdf:GenreForm</variant>
@@ -379,12 +385,12 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="62" count="1" subfield="a">
             <authority>madsrdf:Medium</authority>
             <variant>madsrdf:Medium</variant>
         </map>
-        
+
         <map tag_suffix="80" count="1" subfield="x">
             <authority>madsrdf:Topic</authority>
             <variant>madsrdf:Topic</variant>
@@ -393,7 +399,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="81" count="1" subfield="z">
             <authority>madsrdf:Geographic</authority>
             <variant>madsrdf:Geographic</variant>
@@ -404,14 +410,14 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
         </map>
         <!--
         kefo note - 2021 Nov 4
-        This commented out pattern doesn't appear in the system, but we want 
+        This commented out pattern doesn't appear in the system, but we want
         to allow the preceding (new) pattern for the 781s.
         <map tag_suffix="81" count="2" subfield="vxy">
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
         -->
-        
+
         <map tag_suffix="82" count="1" subfield="y">
             <authority>madsrdf:Temporal</authority>
             <variant>madsrdf:Temporal</variant>
@@ -420,7 +426,7 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
+
         <map tag_suffix="85" count="1" subfield="v">
             <authority>madsrdf:GenreForm</authority>
             <variant>madsrdf:GenreForm</variant>
@@ -429,9 +435,9 @@ declare variable $marcxml2madsrdf:marc2madsMap := (<marc2madsMap>
             <authority>madsrdf:ComplexSubject</authority>
             <variant>madsrdf:ComplexSubject</variant>
         </map>
-        
-    </marc2madsMap>);    
-    
+
+    </marc2madsMap>);
+
 declare variable $marcxml2madsrdf:noteTypeMap := (
     <noteTypeMaps>
         <type tag="667">madsrdf:editorialNote</type>
@@ -439,12 +445,12 @@ declare variable $marcxml2madsrdf:noteTypeMap := (
         <type tag="680">madsrdf:note</type>
         <type tag="681">madsrdf:exampleNote</type>
         <type tag="682">madsrdf:changeNote</type>
-        <type tag="688">madsrdf:historyNote</type>  
-		<type tag="260">madsrdf:editorialNote</type>   
-		<type tag="360">madsrdf:editorialNote</type>   
+        <type tag="688">madsrdf:historyNote</type>
+		<type tag="260">madsrdf:editorialNote</type>
+		<type tag="360">madsrdf:editorialNote</type>
     </noteTypeMaps>);
-    
-    
+
+
 declare variable $marcxml2madsrdf:relationTypeMap := (
     <relationTypeMaps>
         <type tag_prefix="5" pos="1" w="a">madsrdf:hasEarlierEstablishedForm</type>
@@ -454,7 +460,7 @@ declare variable $marcxml2madsrdf:relationTypeMap := (
         <type tag_suffix="5" pos="1" w="h">madsrdf:hasNarrowerAuthority</type>
         <type tag_suffix="5" pos="1" w="r">madsrdf:hasRelatedAuthority</type>
         <type tag_prefix="5" pos="1" w="_">madsrdf:hasRelation</type>
-        
+
         <type tag_prefix="5" pos="2" w="a">madsrdf:hasRelatedAuthority</type>
         <type tag_prefix="5" pos="2" w="b">madsrdf:hasRelatedAuthority</type>
         <type tag_prefix="5" pos="2" w="c">madsrdf:hasRelatedAuthority</type>
@@ -464,54 +470,54 @@ declare variable $marcxml2madsrdf:relationTypeMap := (
         <type tag_suffix="5" pos="2" w="g">madsrdf:hasRelatedAuthority</type>
         <type tag_suffix="5" pos="2" w="h">madsrdf:hasRelatedAuthority</type>
         <type tag_prefix="5" pos="1" w="_">madsrdf:hasRelatedAuthority</type>
-        
+
         <type tag_suffix="5" pos="3" w="a">madsrdf:hasEarlierEstablishedForm</type>
         <type tag_suffix="5" pos="3" w="e">madsrdf:hasEarlierEstablishedForm</type>
         <type tag_suffix="5" pos="3" w="o">madsrdf:hasEarlierEstablishedForm</type>
-        
+
         <type tag_suffix="5" pos="3" w="b">INVALID</type>
-        
+
         <type tag_prefix="5" pos="4" w="b">madsrdf:see</type>
         <type tag_prefix="5" pos="4" w="c">madsrdf:see</type>
         <type tag_prefix="5" pos="4" w="d">madsrdf:see</type>
-       
+
     </relationTypeMaps>);
-    
+
 declare variable $marcxml2madsrdf:variantTypeMap := (
-    <variantTypeMaps>        
+    <variantTypeMaps>
         <type tag="400" count="1">madsrdf:PersonalName</type>
         <type tag="400" count="2" code="cdgq">madsrdf:PersonalName</type>
         <type tag="400" count="2" code="t">madsrdf:NameTitle</type> (: Would title ever not be in the second position?  Is it still an NT when there is a third term, a form subdivision? :) :)
         <type tag="400" count="2" code="vxyz">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="410" count="1">madsrdf:CorporateName</type>
         <type tag="410" count="2" code="t">madsrdf:NameTitle</type> (: this implies that t is the second component :)
         <type tag="410" count="2" code="vxyz">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="411" count="1">madsrdf:ConferenceName</type>
         <type tag="411" count="2" code="t">madsrdf:NameTitle</type>
         <type tag="411" count="2" code="vxyz">madsrdf:ComplexSubject</type> (: Name Could be a name followed by a general, form, etc subdivision :)
-        
+
         <type tag="430" count="2" code="vxyz">madsrdf:ComplexSubject</type> (: UniformTitle - this could have any number of code fields in it :)
-        
+
         <type tag="448" equivalent="y" count="1" code="a">madsrdf:Temporal</type>
         <type tag="448" count="2" code="vxyz">madsrdf:ComplexSubject</type> (: loads of codes :)
-        
+
         <type tag="450" equivalent="x" count="1" code="a">madsrdf:Topic</type>
         <type tag="450" count="2" code="vxyz">madsrdf:ComplexSubject</type>
-       
+
         <type tag="451" equivalent="z" count="1" code="a">madsrdf:Geographic</type>
         <type tag="451" count="2" code="vxyz">madsrdf:ComplexSubject</type>
-        
+
         <type tag="455" equivalent="v" count="1" code="a">madsrdf:GenreForm</type>
         <type tag="455" count="2" code="vxyz">madsrdf:ComplexSubject</type>
-        
+
         <type tag="462" count="1" code="a">madsrdf:Medium</type>
-        
+
         <type tag="480" count="1" code="a">madsrdf:Topic</type>
         <type tag="480" count="2" code="vxyz">madsrdf:ComplexSubject</type>
     </variantTypeMaps>);
- 
+
 
 (:~
 :   This is the main function.  It converts MARCXML to MADSRDF.
@@ -538,7 +544,7 @@ as element(rdf:RDF)
             "demographicTerms"
         else
             "empty"
-    let $owlSameAs := 
+    let $owlSameAs :=
         if ($scheme eq "subjects") then
             (
                 element owl:sameAs {
@@ -549,71 +555,73 @@ as element(rdf:RDF)
                 }
             )
         else ()
-    (: LC Specific :)         
+    (: LC Specific :)
     let $df682 := $marcxml/marcxml:datafield[@tag='682'][1] (: can there every be more than one? :)
+ 
     let $leader_pos05 := fn:substring($marcxml/marcxml:leader, 6 ,1)
-    let $deleted := 
+
+    let $deleted :=
         if ($leader_pos05 eq "d") then
             fn:true()
         else
             fn:false()
+
     let $df1xx := $marcxml/marcxml:datafield[fn:starts-with(@tag,'1')] (: should only be one? :)
     let $df1xx_suffix := fn:substring($df1xx/@tag, 2, 2)
     let $df1xx_sf_counts := fn:count($df1xx/marcxml:subfield)
     let $df1xx_sf_two_code := $df1xx/marcxml:subfield[2]/@code
     let $authoritativeLabel := marcxml2madsrdf:generate-label($df1xx,$df1xx_suffix)
     let $bflcMarcKey := marcxml2madsrdf:generate-marcKey($df1xx)
-    
-    let $authorityType := 
+
+    let $authorityType :=
 			if ($scheme="demographicTerms") then
 				"madsrdf:Authority"
 			else
 				marcxml2madsrdf:get-authority-type($df1xx, fn:true(), $scheme)
-				
-	let $gacs := 
+	let $gacs :=
         if (xs:string($df1xx/@tag) eq "151" and fn:not($deleted)) then
             marcxml2madsrdf:generate-gacs(xs:string($authoritativeLabel), $marcxml/marcxml:datafield[@tag='043'])
         else
             ()
 
-    let $useFor := 
+    let $useFor :=
        for $sf in  $marcxml/marcxml:datafield[@tag='010']/marcxml:subfield[@code="z"]
             return marcxml2madsrdf:create-useFor-relation($sf, $authorityType)
-              
-    let $components := 
+
+    let $components :=
         if ($deleted) then
             marcxml2madsrdf:create-components-from-DFxx($df1xx, fn:false(), $scheme)
         else
             marcxml2madsrdf:create-components-from-DFxx($df1xx, fn:true(), $scheme)
-    let $componentList := 
-        if ($components and $deleted) then marcxml2madsrdf:create-component-list($components, fn:false()) 
+    let $componentList :=
+        if ($components and $deleted) then marcxml2madsrdf:create-component-list($components, fn:false())
         else if ($components) then marcxml2madsrdf:create-component-list($components, fn:true())
         else ()
-        
+
     let $elements := marcxml2madsrdf:create-elements-from-DFxx($df1xx, $scheme)
-    let $elementList := 
-        if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements) 
+    let $elementList :=
+        if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements)
         else ()
 
-    let $classification := 
+    let $classification :=
         for $df in $marcxml/marcxml:datafield[@tag='053']
         return marcxml2madsrdf:create-classifications($df)
-    
-    let $fullerName := 
+
+    let $fullerName :=
         if ($marcxml/marcxml:datafield[@tag='378']/marcxml:subfield[@code='q']) then
            element madsrdf:fullerName {
                element madsrdf:PersonalName{
                 element rdfs:label {$marcxml/marcxml:datafield[@tag='378']/marcxml:subfield[@code='q']/text()},
                 for $sf in $marcxml/marcxml:datafield[@tag='378']/marcxml:subfield[fn:matches(@code, '(u|v)')]
-                return 
+                return
                    element madsrdf:hasSource {
                      element madsrdf:Source{
                         element rdfs:label {$sf/text()}
                    }}
             }}
          else()
-             
-    let $creationDate :=        
+
+    let $creationDate :=
         for $cd in $marcxml/marcxml:datafield[@tag='046']
         let $source:=if ($cd/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($cd/marcxml:subfield[@code='2']),") ") else ("")
         return
@@ -622,7 +630,7 @@ as element(rdf:RDF)
                     element skos:Concept {
                        element rdfs:label{fn:concat($source, $cd/marcxml:subfield[@code='k']/text())},
                        for $sf in $cd/marcxml:subfield[fn:matches(@code, '(u|v)')]
-                       return 
+                       return
                           element madsrdf:hasSource {
                              element madsrdf:Source{
                                 element rdfs:label {$sf/text()}
@@ -634,7 +642,7 @@ as element(rdf:RDF)
                     element skos:Concept {
                        element rdfs:label{fn:concat($source, $cd/marcxml:subfield[@code='l']/text())},
                        for $sf in $cd/marcxml:subfield[fn:matches(@code, '(u|v)')]
-                       return 
+                       return
                           element madsrdf:hasSource {
                              element madsrdf:Source{
                                 element rdfs:label {$sf/text()}
@@ -642,25 +650,25 @@ as element(rdf:RDF)
                    }}
              else ()
              )
-             
-(:    let $formOfWork :=        
+
+(:    let $formOfWork :=
         for $ev in $marcxml/marcxml:datafield[@tag='380']
 	    let $source:=if ($ev/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($ev/marcxml:subfield[@code='2']),") ") else ("")
-        return 
+        return
             (for $sf in $ev/marcxml:subfield[@code='a']
-             return 
+             return
                 element madsrdf:elementValue {
                   element madsrdf:GenreFormElement {
                     element rdfs:label {fn:concat($source,$sf/text())},
                     for $sf in $ev/marcxml:subfield[@code='0']
-                    return 
+                    return
                        element madsrdf:hasSource {
                          element madsrdf:Source{
                             element rdfs:label {$sf/text()}
                        }}
                 }}
             ) :)
-    let $formOfWork :=        
+    let $formOfWork :=
         for $ev in $marcxml/marcxml:datafield[@tag='380']
 	    let $source:=if ($ev/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($ev/marcxml:subfield[@code='2']),") ") else ("")
          return element madsrdf:elementList {
@@ -670,41 +678,41 @@ as element(rdf:RDF)
                 element madsrdf:elementValue {fn:concat($source,$sf/text())}
                 },
             for $sf in $ev/marcxml:subfield[@code='0']
-            return 
+            return
               element madsrdf:hasSource {
                element madsrdf:Source{
                  element rdfs:label {$sf/text()}
-                }}                
-            } 
-         
-     let $workOrigin :=        
+                }}
+            }
+
+     let $workOrigin :=
         for $wo in $marcxml/marcxml:datafield[@tag='370']
         let $source:=if ($wo/marcxml:subfield[@code='2'][1]) then fn:concat("(", fn:string($wo/marcxml:subfield[@code='2'][1]),") ") else ("")
-        return        
+        return
             (for $sf in $wo/marcxml:subfield[@code='g']
-              return element madsrdf:workOrigin { 
+              return element madsrdf:workOrigin {
                      element madsrdf:Geographic {
                        element rdfs:label {fn:concat($source,$sf/text())},
                        for $sf in $wo/marcxml:subfield[fn:matches(@code,'(v|u|0)')]
-                       return 
+                       return
                              element madsrdf:hasSource {
                                element madsrdf:Source{
                                  element rdfs:label {$sf/text()}
                              }}
                      }}
              )
-            
-    let $hasCharacteristic :=        
+
+    let $hasCharacteristic :=
         for $hc in $marcxml/marcxml:datafield[@tag='381']
         let $source:=if ($hc/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($hc/marcxml:subfield[@code='2']),") ") else ("")
         return
            (for $sf in $hc/marcxml:subfield[@code='a']
-            return 
+            return
                 element madsrdf:hasCharacteristic {
                     element skos:Concept {
                        element rdfs:label{fn:concat($source, $sf/text())},
                        for $sf in $hc/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                       return 
+                       return
                           element madsrdf:hasSource {
                              element madsrdf:Source{
                                 element rdfs:label {$sf/text()}
@@ -713,33 +721,46 @@ as element(rdf:RDF)
             )
 
     let $df4xx := $marcxml/marcxml:datafield[fn:starts-with(@tag,'4')]
-    let $variants := 
-
+    let $variants :=
         for $df in $df4xx
         return element madsrdf:hasVariant { marcxml2madsrdf:create-variant($df, $scheme) }
+    
+    let $scriptsPresent := fn:distinct-values( $variants/madsrdf:*/madsrdf:variantLabel/@xml:lang[fn:contains(.,'-') and fn:not(fn:contains(., '-Latn'))] )
+    let $preferredLabels := 
+        for $sp in $scriptsPresent
+        let $vLabels := $variants/madsrdf:*/madsrdf:variantLabel[@xml:lang eq $sp]
+        let $vLabelsSorted := 
+            for $vl in $vLabels
+            order by fn:string-length( xs:string($vl) ) descending
+            return $vl
+        return 
+            element madsrdf:authoritativeLabel {
+                $vLabelsSorted[1]/@*,
+                xs:string($vLabelsSorted[1])
+            }
 
 
     let $df4xx_w := $marcxml/marcxml:datafield[fn:starts-with(@tag,'4') and marcxml:subfield[1]/@code="w"]
-    let $relations_df4xx := 
+    let $relations_df4xx :=
         if ($df4xx_w) then
             for $df in $df4xx_w
                 return marcxml2madsrdf:create-relation($df, $scheme)
         else ()
-                
+
     let $df5xx := $marcxml/marcxml:datafield[fn:starts-with(@tag,'5')]
-    let $relations := 
+    let $relations :=
         if ($df5xx) then
             for $df in $df5xx
                 return marcxml2madsrdf:create-relation($df, $scheme)
         else ()
-    let $hasLater_relation := 
+    let $hasLater_relation :=
          if ($deleted and $df682) then
             marcxml2madsrdf:create-hasLaterForm-relation($df682, $authorityType, $scheme)
-        else 
+        else
             ()
-    
-    let $hasExactMatchViaf := 
-        if ($scheme eq "names" and fn:not(fn:contains($marc001, '-781'))) then 
+
+    let $hasExactMatchViaf :=
+        if ($scheme eq "names" and fn:not(fn:contains($marc001, '-781'))) then
            (: let $viaf_uri := fn:concat("http://viaf.org/viaf/sourceID/LC%7C", xs:string($marcxml/marcxml:controlfield[@tag='001']), "#skos:Concept"):)
            let $df010a := xs:string($marcxml/marcxml:datafield[@tag='010']/marcxml:subfield[@code='a'])
            let $df010a := fn:replace($df010a, "^[ ]+|[ ]+$", "")
@@ -748,27 +769,27 @@ as element(rdf:RDF)
             return <madsrdf:hasExactExternalAuthority rdf:resource="{$viaf_uri}"/>
         else
             ()
-            
-    let $standardIdentifierRelations := 
+
+    let $standardIdentifierRelations :=
         (
             for $i in $marcxml/marcxml:datafield[@tag eq '024']/marcxml:subfield[@code eq '0']
             let $i_uri := xs:string($i)
             where shared:validate-uri($i_uri)
             return <madsrdf:hasExactExternalAuthority rdf:resource="{$i_uri}" />,
-            
+
             for $i in $marcxml/marcxml:datafield[@tag eq '024']/marcxml:subfield[@code eq '1']
             let $i_uri := xs:string($i)
             where shared:validate-uri($i_uri)
             return <madsrdf:identifiesRWO rdf:resource="{$i_uri}" />
         )
-    
+
     let $dfSources := $marcxml/marcxml:datafield[fn:matches(@tag , '670|675')]
-    let $sources := 
+    let $sources :=
         if ($dfSources) then
             for $df in $dfSources
                 return element madsrdf:hasSource { marcxml2madsrdf:create-source($df, $scheme) }
         else ()
-        
+
     let $dfNotes := ( $marcxml/marcxml:datafield[fn:matches(@tag , '667|678|680|681|688')],
 			 			if ($scheme eq "subjects") then
 							$marcxml/marcxml:datafield[@tag ='260']
@@ -777,18 +798,18 @@ as element(rdf:RDF)
 							$marcxml/marcxml:datafield[@tag ='360']
 						else ()
 				)
-    let $notes := 
+    let $notes :=
         if ($dfNotes) then
             for $df in $dfNotes
                 return marcxml2madsrdf:create-notes($df,$scheme)
         else ()
-        
+
     let $delNote :=
         if ($deleted and $df682) then
              marcxml2madsrdf:create-deletion-note($df682, $scheme)
         else ()
-        
-    let $rwoClass := 
+
+    let $rwoClass :=
         if ($scheme eq "names") then
             marcxml2madsrdf:create-rwoClass( $marcxml, $marc001 )
         else
@@ -800,7 +821,7 @@ as element(rdf:RDF)
                 element identifiers:lccn { fn:normalize-space($marcxml/marcxml:datafield[@tag eq "010"][1]/marcxml:subfield[@code eq "a"][1]) }
             else
                 (),
-            
+
             for $i in $marcxml/marcxml:datafield[@tag eq "020"]
             let $code := fn:normalize-space($i/marcxml:subfield[@code eq "2"])
             let $iStr := fn:normalize-space(xs:string($i/marcxml:subfield[@code eq "a"]))
@@ -808,253 +829,253 @@ as element(rdf:RDF)
             return
                 if ( $code ne "" ) then
                     element { fn:concat("identifiers:" , $code) } { $iStr }
-                else 
+                else
                     element identifiers:local { $iStr },
-                    
+
             for $i in $marcxml/marcxml:datafield[@tag eq "035"]/marcxml:subfield[@code eq "a"][fn:not( fn:contains(. , "DLC") )]
             let $iStr := xs:string($i)
             return
                 if ( fn:contains($iStr, "(OCoLC)" ) ) then
                     (: element identifiers:oclcnum { fn:normalize-space(fn:replace($iStr, "\(OCoLC\)", "")) } :)
 					element identifiers:local { fn:normalize-space($iStr) }
-                else 
+                else
                     element identifiers:local { fn:normalize-space($iStr) }
         )
-        
+
     let $ri := marcxml2recordinfo:recordInfoFromMARCXML($marcxml)
-    let $adminMetadata := 
+    let $adminMetadata :=
         for $r in $ri
         return element madsrdf:adminMetadata { $r }
-    
+
     let $marc008_pos6 := fn:substring($marcxml/marcxml:controlfield[@tag='008'], 7 ,1)
-    let $geo_sub := 
+    let $geo_sub :=
         if ($marc008_pos6 eq "d" or $marc008_pos6 eq "i") then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_SubdivideGeographically'}
-                
-            }        
+
+            }
         else ()
-        
+
     let $marc008_pos9 := fn:substring($marcxml/marcxml:controlfield[@tag='008'], 10 ,1)
-    let $kind_of_record := 
+    let $kind_of_record :=
         if ($marc008_pos9 eq 'a' and $scheme eq "names") then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_NamesAuthorizedHeadings'}
         }
         else if ($marc008_pos9 eq 'a' and $scheme eq "subjects" and fn:substring($marc001,1, 2) eq "sh") then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_LCSHAuthorizedHeadings'}
             }
         else if ($marc008_pos9 eq 'a' and $scheme eq "names") then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_NamesAuthorizedHeadings'}
             }
         else if ($marc008_pos9 eq 'd') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_Subdivisions'}
             }
         else if ($marc008_pos9 eq 'f') then
             (: this does not seem to apply to names :)
             (
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_LCSHAuthorizedHeadings'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_Subdivisions'}
                 }
-            )		
-            
+            )
+
         else if ($marc008_pos9 eq 'b' and $scheme eq "subjects") then
-                (element madsrdf:isMemberOfMADSCollection { 
+                (element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_UntracedReference'}
                 }    ,
-				
-                element madsrdf:editorialNote {"Reference record only; not a valid heading."}				
+
+                element madsrdf:editorialNote {"Reference record only; not a valid heading."}
 				)
         else ()
-        
+
     let $marc008_pos17 := fn:substring($marcxml/marcxml:controlfield[@tag='008'], 18 ,1)
-    let $subdivision_type := 
+    let $subdivision_type :=
         if ($marc008_pos17 eq 'a') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_TopicSubdivisions'}
             }
         else if ($marc008_pos17 eq 'b') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_GenreFormSubdivisions'}
             }
         else if ($marc008_pos17 eq 'c') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_TemporalSubdivisions'}
             }
         else if ($marc008_pos17 eq 'd') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_GeographicSubdivisions'}
             }
         else if ($marc008_pos17 eq 'e') then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_LanguageSubdivisions'}
             }
         else ()
-        
+
      let $frbr_kind:= (:100, 110, 100 with $t is a title or nametitle 130 with anything is a title. if it has a language or arrangement, it's an expression, otherwise, it's a work:)
-            if ($authorityType="madsrdf:Title" or $authorityType="madsrdf:NameTitle") then (:its at least a work:)         	    	
-                ( (:$l=language, $o=arrangment for music:) 
+            if ($authorityType="madsrdf:Title" or $authorityType="madsrdf:NameTitle") then (:its at least a work:)
+                ( (:$l=language, $o=arrangment for music:)
                     if ($df1xx/marcxml:subfield[@code="l" or @code="o"]) then (:expression:)
-                        element madsrdf:isMemberOfMADSCollection { 
+                        element madsrdf:isMemberOfMADSCollection {
 			                attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_FRBRExpression'}
 			            }
 			        else
-			        	element madsrdf:isMemberOfMADSCollection { 
+			        	element madsrdf:isMemberOfMADSCollection {
 			                attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_FRBRWork'}
 			            }
                 )
-            else () 
+            else ()
     (: commenting out for the time being :)
     (:
-    let $df100_subdivision_type := 
+    let $df100_subdivision_type :=
         if ($df1xx_suffix='80') then
-            element madsrdf:isMemberOf { 
+            element madsrdf:isMemberOf {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_TopicalSubdivisions'}
             }
         else if ($df1xx_suffix='85') then
-            element madsrdf:isMemberOf { 
+            element madsrdf:isMemberOf {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_GenreSubdivisions'}
             }
         else if ($df1xx_suffix='82') then
-            element madsrdf:isMemberOf { 
+            element madsrdf:isMemberOf {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_ChronologicalSubdivisions'}
             }
         else if ($df1xx_suffix='81') then
-            element madsrdf:isMemberOf { 
+            element madsrdf:isMemberOf {
                 attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_GeographicSubdivisions'}
             }
         else ()
     :)
     let $undiff :=
         if ( fn:substring($marcxml/marcxml:controlfield[@tag='008'], 33 ,1) eq 'b' and $scheme eq "names") then
-            element madsrdf:isMemberOfMADSCollection { 
+            element madsrdf:isMemberOfMADSCollection {
                 attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_NamesUndifferentiated'}
         }
         else ()
-        
-    let $jurisdiction := 
+
+    let $jurisdiction :=
         if ($marcxml/marcxml:datafield[@tag="110"][@ind1="1"] and $scheme eq "names") then
-            element madsrdf:isMemberOfMADSCollection { 
-                attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_Jurisdictions'}      
-            }        
+            element madsrdf:isMemberOfMADSCollection {
+                attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_Jurisdictions'}
+            }
         else ()
-	
-    let $marc001_prefix := fn:substring( $marc001 , 1 , 2 )        
-    let $marc001_prefix_type := 
+
+    let $marc001_prefix := fn:substring( $marc001 , 1 , 2 )
+    let $marc001_prefix_type :=
         if ($marc001_prefix='sh') then
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_LCSH_General'}
                 }
             )
         else if ($marc001_prefix='sj') then
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/childrensSubjects'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/subjects/collection_LCSH_Childrens'}
                 }
             )
         else if ( fn:contains($marc001_prefix, "n") ) then
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/names'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/names/collection_LCNAF'}
                 }
             )
         else if ($marc001_prefix='gf' ) then
             (: should this also be a part of genreForm concept scheme.  Yes.  But it will break something. :)
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/genreForms'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/genreForms/collection_LCGFT_General'}
                 }
             )
         else if ( fn:contains($marc001_prefix, "mp") ) then
             (: should this also be a part of genreForm concept scheme.  Yes.  But it will break something. :)
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/performanceMediums'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/performanceMediums/collection_LCMPT_General'}
                 }
             )
 			 else if ( fn:contains($marc001_prefix, "dg") ) then
             (: should this also be a part of demographicTerms concept scheme.  Yes.  But it will break something. :)
             (
-                element madsrdf:isMemberOfMADSScheme { 
+                element madsrdf:isMemberOfMADSScheme {
                     attribute rdf:resource {'http://id.loc.gov/authorities/demographicTerms'}
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {'http://id.loc.gov/authorities/demographicTerms/collection_LCDGT_General'}
                 }
             )
         else ()
-        
-    let $pattern_headings := 
+
+    let $pattern_headings :=
         (
 		for $ph in $marcxml/marcxml:datafield[@tag='073' and marcxml:subfield[@code='z']='lcsh']/marcxml:subfield[@code='a']
             return
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {fn:concat('http://id.loc.gov/authorities/subjects/collection_PatternHeading' , fn:replace($ph , ' ' , ''))}
                 },
 		for $ph in $marcxml/marcxml:datafield[@tag='072' and marcxml:subfield[@code='2']='lcsh']/marcxml:subfield[@code='a']
             return
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource {fn:concat('http://id.loc.gov/authorities/subjects/collection_PatternHeading' , fn:replace($ph , ' ' , ''))}
                 }
 		)
-                
-    let $use_pattern_collection := 
+
+    let $use_pattern_collection :=
         for $ph in $marcxml/marcxml:datafield[@tag='072' and marcxml:subfield[@code='2']='lcsh']/marcxml:subfield[@code='a']
         return
-            element madsrdf:usePatternCollection { 
+            element madsrdf:usePatternCollection {
                 attribute rdf:resource {fn:concat('http://id.loc.gov/authorities/subjects/collection_PatternHeading' , fn:replace($ph , ' ' , ''))}
         }
 
-   let $dgtCategory_collection := 
+   let $dgtCategory_collection :=
         for $ph in $marcxml/marcxml:datafield[@tag='072' and marcxml:subfield[@code='2']='lcdgt']/marcxml:subfield[@code='a']
         return
             if($ph) then
-              (  element madsrdf:isMemberOfMADSScheme { 
-                    attribute rdf:resource { fn:concat("http://id.loc.gov/authorities/demographicTerms/" , fn:replace($ph, ' ', '')) }   
+              (  element madsrdf:isMemberOfMADSScheme {
+                    attribute rdf:resource { fn:concat("http://id.loc.gov/authorities/demographicTerms/" , fn:replace($ph, ' ', '')) }
                 },
-                element madsrdf:isMemberOfMADSCollection { 
+                element madsrdf:isMemberOfMADSCollection {
                     attribute rdf:resource { fn:concat("http://id.loc.gov/authorities/demographicTerms/" , $marcxml2madsrdf:dgtCategoryMap/dgtCategory[@code=$ph]/text()) }
                 } )
              else ()
-             
-                
-    let $scheme := 
+
+
+    let $scheme :=
         if ($marc001_prefix='sj') then
             "childrensSubjects"
         else
             $scheme
-    
-    let $rdf := 
+
+    let $rdf :=
         if ($deleted) then
-            let $variant := 
+            let $variant :=
                 element {$authorityType} {
                     attribute rdf:about { fn:concat("http://id.loc.gov/" , $marcxml2madsrdf:authSchemeMap/authScheme[@abbrev=$scheme] , $marc001) },
                     element rdf:type {
                         attribute rdf:resource { fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , "Variant") }
                     },
-                    (: all "deleted" or "cancelled" records are Variants AND DeprecatedAuthorities :) 
+                    (: all "deleted" or "cancelled" records are Variants AND DeprecatedAuthorities :)
                     element rdf:type {
                         attribute rdf:resource { fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , "DeprecatedAuthority") }
                     },
@@ -1069,10 +1090,10 @@ as element(rdf:RDF)
                     element madsrdf:variantLabel {
                       if ($scheme eq "names") then
                         text {$authoritativeLabel}
-                      else 
+                      else
                        ( attribute xml:lang {"en"},
                         text {$authoritativeLabel} )
-                    }, 
+                    },
                     $componentList,
                     $elementList,
                     $hasLater_relation,
@@ -1084,8 +1105,8 @@ as element(rdf:RDF)
                     $adminMetadata
                 }
             return $variant
-        else 
-            let $authority := 
+        else
+            let $authority :=
                 element {$authorityType} {
                     attribute rdf:about { fn:concat("http://id.loc.gov/" , $marcxml2madsrdf:authSchemeMap/authScheme[@abbrev=$scheme] , $marc001) },
                     element rdf:type {
@@ -1097,7 +1118,7 @@ as element(rdf:RDF)
                     element rdf:type {
                         attribute rdf:resource { fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , fn:replace($authorityType, "madsrdf:", "") ) }
                     },
-                :)    
+                :)
                     element madsrdf:authoritativeLabel {
                     if ($scheme eq "names") then
                         text {$authoritativeLabel}
@@ -1105,8 +1126,10 @@ as element(rdf:RDF)
                         attribute xml:lang {"en"},
                         text {$authoritativeLabel}
                      )
-                    },			
-					
+                    },
+                    
+                    $preferredLabels,
+
                     $componentList,
                     $elementList,
                     $gacs,
@@ -1130,9 +1153,9 @@ as element(rdf:RDF)
                     $workOrigin,
                     $hasCharacteristic,
                     $variants,
-                    $useFor,        
+                    $useFor,
                     $relations_df4xx,
-                    $relations, 
+                    $relations,
                     $hasExactMatchViaf,
                     $standardIdentifierRelations,
                     $sources,
@@ -1142,8 +1165,38 @@ as element(rdf:RDF)
                     $adminMetadata
                 }
             return $authority
-
-    return <rdf:RDF 
+    (:Debug
+    let $_ := 
+        if ($leader_pos05 = "d") then
+            file:append-text-lines("df682.log", fn:concat("leader pos05", ": ", $leader_pos05))
+        else ()
+     let $_ := 
+        if ($leader_pos05 = "d") then
+            file:append-text-lines("df682.log", fn:concat("$deleted", ": ", $deleted))
+        else () 
+    :)
+    (:Debug
+    let $_ := 
+        if ($leader_pos05 = "d") then 
+        for $code in $df682/*
+            return
+                file:append-text-lines("df682.log", fn:concat($code/@*, ": ", $code))
+        else ()
+     :)
+    (:Debug
+    let $_ := 
+        if ($leader_pos05 = "d") then 
+             file:append-text("df682.log", 
+                serialize($rdf,
+                 <output:serialization-parameters>
+                    <output:indent value="yes"/>
+                    <output:method value="xml"/>
+                    <output:omit-xml-declaration value="no"/>
+                </output:serialization-parameters>               
+                ))
+        else():)
+        
+    return <rdf:RDF
 				xmlns:marcxml       = 	"http://www.loc.gov/MARC21/slim"
 				xmlns:skos			=	"http://www.w3.org/2004/02/skos/core#"
 				xmlns:madsrdf       =	"http://www.loc.gov/mads/rdf/v1#"
@@ -1163,28 +1216,28 @@ as element(rdf:RDF)
 -------------------------
 
     Creates Classification Properties:
-    
-        $marc053 as element() is the marc 053 datafield 
+
+        $marc053 as element() is the marc 053 datafield
 
 -------------------------
 :)
 declare function marcxml2madsrdf:create-classifications($marc053 as element()) as element() {
-    let $assignedByLC := 
+    let $assignedByLC :=
         if ($marc053/@ind2 eq '0') then
             (: LC assigned means LC Classification :)
             xs:boolean(1)
-        else 
+        else
             xs:boolean(0)
-    let $assignedByOther := 
+    let $assignedByOther :=
         if ($marc053/@ind2 eq '4') then
             (: LC assigned means LC Classification :)
             xs:boolean(1)
-        else 
+        else
             xs:boolean(0)
-        
+
     let $textparts :=
         for $sf at $pos in $marc053/marcxml:subfield
-            let $class_str := 
+            let $class_str :=
                 if ($sf/@code eq 'a') then
                     $sf
                 else if ($sf/@code eq 'b') then
@@ -1194,7 +1247,7 @@ declare function marcxml2madsrdf:create-classifications($marc053 as element()) a
     let $text := fn:replace( fn:string-join($textparts , '') , ' ' , '' )
 
     return
-        element madsrdf:classification { 
+        element madsrdf:classification {
             element lcc:ClassNumber {
                 element madsrdf:code {$text},
                 if ($assignedByLC) then
@@ -1216,19 +1269,19 @@ declare function marcxml2madsrdf:create-classifications($marc053 as element()) a
 :
 :   @param  $sf        element() is the subfield
 :   @param  $pos       as xs:integer is the position in the loop
-:   @param  $authority as xs:boolean denotes whether this is an Authority or Variant    
+:   @param  $authority as xs:boolean denotes whether this is an Authority or Variant
 :   @return component Authority record/element
 :)
 declare function marcxml2madsrdf:create-component(
-        $sf as element(), 
-        $pos as xs:integer, 
+        $sf as element(),
+        $pos as xs:integer,
         $authority as xs:boolean,
         $scheme) as element()*
 {
     let $c := $sf/@code
     let $df_suffix := fn:substring($sf/../@tag , 2 , 2)
 	let $df_ind1 := fn:string($sf/../@ind1)
-    let $aORv := 
+    let $aORv :=
         if ($authority) then
             "Authority"
         else
@@ -1245,51 +1298,51 @@ declare function marcxml2madsrdf:create-component(
             else
                 $marcxml2madsrdf:marc2madsMap/map[fn:contains(@variant_subfield , $c) and @count='1']/variant
 
-    
+
 	(: let $label := $sf/text() :)
-	            
-    let $labelProperty := 
+
+    let $labelProperty :=
         if ($authority) then
             "madsrdf:authoritativeLabel"
         else
             "madsrdf:variantLabel"
-    
+
     let $elements := marcxml2madsrdf:create-element($sf, 1, $scheme)
-    let $elementList := 
-        if ($elements) then marcxml2madsrdf:create-element-list($elements) 
+    let $elementList :=
+        if ($elements) then marcxml2madsrdf:create-element-list($elements)
         else ()
-      
+
     let $label := fn:string-join($elements, ' ')
-    let $label := 
+    let $label :=
         if ( fn:ends-with($label, ".") and fn:not(fn:contains($type, "Name")) ) then
             fn:substring($label, 1, (fn:string-length($label) - 1))
-        else 
+        else
             $label
     (: let $nodeID := marcxml2madsrdf:generate-nodeID($label,$authority) :)
-    
-        
+
+
     (:
     let $elements := marcxml2madsrdf:create-elements-from-DFxx($sf/parent::node()[1])
-    let $elementList := 
-        if ($elements) then marcxml2madsrdf:create-element-list($elements) 
+    let $elementList :=
+        if ($elements) then marcxml2madsrdf:create-element-list($elements)
         else ()
     :)
-    
+
     (: fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , fn:replace($type, "madsrdf:", "") ) :)
-            
-    let $component := 
+
+    let $component :=
         if ($type ne "") then
             element {$type} {
                 (: attribute rdf:nodeID {$nodeID}, :)
                 element rdf:type {
                     attribute rdf:resource { fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , $aORv ) }
-                }, 
+                },
                 element {$labelProperty} {
                   if ($scheme eq "names") then
                     text {$label}
                   else (
                     attribute xml:lang {"en"},
-                    text {$label} 
+                    text {$label}
                    )
                 },
                 $elementList
@@ -1304,11 +1357,11 @@ declare function marcxml2madsrdf:create-component(
 :
 :   @param  $component_elementlist  as element() holds the component
 :   @param  $counts                 as xs:integer is the number of subfields
-:   @param  $authority              as xs:boolean denotes whether this is an Authority or Variant    
+:   @param  $authority              as xs:boolean denotes whether this is an Authority or Variant
 :   @return component Authority record/element
 :)
 declare function marcxml2madsrdf:create-component-list($component_elementlist, $authority as xs:boolean) {
-    let $component_list :=   
+    let $component_list :=
         element {"madsrdf:componentList"} {
             attribute rdf:parseType {"Collection"},
             $component_elementlist
@@ -1322,7 +1375,7 @@ declare function marcxml2madsrdf:create-component-list($component_elementlist, $
 -------------------------
 
     Returns Component from a 1xx or 4xx marcxml:datafield
-    
+
         $df as element() is the relevant marcxml:datafield
         $counts as is the number of subfields
         $authority as xs:boolean denotes whether this is an Authority or Variant
@@ -1331,14 +1384,14 @@ declare function marcxml2madsrdf:create-component-list($component_elementlist, $
 :)
 declare function marcxml2madsrdf:create-components-from-DFxx($df as element(), $authority as xs:boolean, $scheme) {
     let $df_suffix := fn:substring($df/@tag, 2, 2)
-    let $components := 
-        if ( 
-                ( $df/marcxml:subfield[@code eq 'a'] 
-                and ($df/marcxml:subfield[fn:matches(@code , "t|v|x|y|z")]) 
+    let $components :=
+        if (
+                ( $df/marcxml:subfield[@code eq 'a']
+                and ($df/marcxml:subfield[fn:matches(@code , "t|v|x|y|z")])
                 and ($df_suffix ne "30") )
                 or
                 ( fn:matches($df/@tag , '80|81|82|85') and
-                fn:count($df/marcxml:subfield[@code ne "w"]) gt 1 ) 
+                fn:count($df/marcxml:subfield[@code ne "w"]) gt 1 )
             ) then
             for $f at $pos in $df/marcxml:subfield[fn:matches(@code , "a|t|v|x|y|z")]
                 let $component := marcxml2madsrdf:create-component($f, $pos, $authority, $scheme)
@@ -1354,32 +1407,32 @@ declare function marcxml2madsrdf:create-components-from-DFxx($df as element(), $
 -------------------------
 
     Creates MADS Deletion Note:
-    
+
         $df as element() is the relevant marcxml:datafield
 
 -------------------------
 :)
 declare function marcxml2madsrdf:create-deletion-note($df as element(), $scheme) as element() {
-    
+
     let $textparts :=
         for $sf in $df/marcxml:subfield
-            let $str := 
+            let $str :=
                 if ($sf/@code eq 'a') then
                     fn:concat('{' , $sf/text() , '}')
                 else
                     $sf/text()
             return $str
     let $text := fn:string-join($textparts, ' ')
-            
-    let $note := element madsrdf:deletionNote { 
+
+    let $note := element madsrdf:deletionNote {
           if ($scheme eq "names") then
             text {$text}
           else (
             attribute xml:lang {"en"},
-            text {$text} 
+            text {$text}
           )
         }
-        
+
     return $note
 };
 
@@ -1391,7 +1444,7 @@ declare function marcxml2madsrdf:create-deletion-note($df as element(), $scheme)
 -------------------------
 
     Creates Element:
-    
+
         $sf as element() is the subfield
         $pos as xs:integer is the position in the loop
 
@@ -1413,15 +1466,15 @@ declare function marcxml2madsrdf:create-element($sf, $pos, $scheme) {
                         $label
                       else (
                         attribute xml:lang {"en"},
-                        $label ) 
+                        $label )
                     }
                 }
         else ()
-    let $extras := 
+    let $extras :=
         if ($pos=1) then
             for $dfc in $sf/following-sibling::node()
                 let $el := $marcxml2madsrdf:elementTypeMap/elementType[@tag_suffix=$tag_suffix and @code=$sf/@code and @ancillary=$dfc/@code]/text()
-                return 
+                return
                     if ($el and $tag_suffix eq "30") then
                         element {$el} {
                             element madsrdf:elementValue {
@@ -1433,7 +1486,7 @@ declare function marcxml2madsrdf:create-element($sf, $pos, $scheme) {
                             }
                         }
                     else if ($el and ($sf/@code="t" or ($dfc/@code!="t" and fn:not($dfc/preceding-sibling::node()[@code="t"])))) then
-                        (: this seems a little forced, but we need to seperate the the name and title parts :) 
+                        (: this seems a little forced, but we need to seperate the the name and title parts :)
                         element {$el} {
                             element madsrdf:elementValue {
                               if ($scheme eq "names") then
@@ -1455,7 +1508,7 @@ declare function marcxml2madsrdf:create-element($sf, $pos, $scheme) {
 -------------------------
 
     Creates ElementList:
-    
+
         $component_elementlist as element() holds the component
         $counts as is the number of subfields
         $authority as xs:boolean denotes whether this is an Authority or Variant
@@ -1477,7 +1530,7 @@ declare function marcxml2madsrdf:create-element-list($elementlist) {
 -------------------------
 
     Returns Element from a 1xx or 5xx marcxml:datafield
-    
+
         $df as element() is the relevant marcxml:datafield
         $counts as is the number of subfields
         $authority as xs:boolean denotes whether this is an Authority or Variant
@@ -1486,8 +1539,8 @@ declare function marcxml2madsrdf:create-element-list($elementlist) {
 :)
 declare function marcxml2madsrdf:create-elements-from-DFxx($df as element(), $scheme) {
     let $df_suffix := fn:substring($df/@tag, 2, 2)
-    let $elements := 
-        if ( 
+    let $elements :=
+        if (
                 ($df/marcxml:subfield[@code eq 'a'] or fn:matches($df_suffix , '80|81|82|85'))
             ) then
             for $f at $pos in $df/marcxml:subfield[fn:matches(@code , "a|v|x|y|z")]
@@ -1506,24 +1559,24 @@ declare function marcxml2madsrdf:create-elements-from-DFxx($df as element(), $sc
 :   @return zero or more madsrdf:useFor elements
 :)
 declare function marcxml2madsrdf:create-useFor-relation(
-    $sf as element(), 
+    $sf as element(),
     $authorityType as xs:string
-    ) as element()* 
+    ) as element()*
 {
 
     let $cancelledlccn := fn:replace( fn:string($sf), " ","")
-    let $relatedscheme := 
+    let $relatedscheme :=
         if ( fn:starts-with($cancelledlccn, "sh") ) then
             (: presume this is LCSH :)
             "subjects"
         else if ( fn:starts-with($cancelledlccn, "sj") ) then
             (: presume this is LCSH :)
             "childrensSubjects"
-        else if ( fn:starts-with($cancelledlccn, "gf") ) then                                        
+        else if ( fn:starts-with($cancelledlccn, "gf") ) then
             "genreForms"
-		else if ( fn:starts-with($cancelledlccn, "mp") ) then                                        
+		else if ( fn:starts-with($cancelledlccn, "mp") ) then
             "performanceMediums"
-        else if ( fn:starts-with($cancelledlccn, "dg") ) then                                        
+        else if ( fn:starts-with($cancelledlccn, "dg") ) then
             "demographicTerms"
         else if ( fn:starts-with($cancelledlccn, "n") ) then
             "names"
@@ -1531,7 +1584,7 @@ declare function marcxml2madsrdf:create-useFor-relation(
             ""
 
     let $docuri := fn:concat("/authorities/", $relatedscheme , "/" , $cancelledlccn, ".xml")
-    let $docexists := 
+    let $docexists :=
         if ($relatedscheme ne "") then
             fn:doc-available($docuri)
         else
@@ -1542,7 +1595,7 @@ declare function marcxml2madsrdf:create-useFor-relation(
             element madsrdf:useFor {
                 attribute rdf:resource { fn:concat( "http://id.loc.gov/authorities/" , $relatedscheme , "/" , $cancelledlccn ) }
             }
-        else 
+        else
             ()
 };
 
@@ -1556,35 +1609,35 @@ declare function marcxml2madsrdf:create-useFor-relation(
 :   @return zero or more madsrdf:hasLaterEstablishedForm elements
 :)
 declare function marcxml2madsrdf:create-hasLaterForm-relation(
-    $df as element(), 
+    $df as element(),
     $authorityType as xs:string,
     $scheme
-    ) as element()* 
+    ) as element()*
 {
     (:any subfield has covered by: :)
-    let $objprop := 
+    let $objprop :=
             if ( fn:matches( xs:string($df) , 'covered by|will be issued' ) ) then
                 "madsrdf:useInstead"
             else
                 "madsrdf:hasLaterEstablishedForm"
-    let $found_lccns := 
+    let $found_lccns :=
         for $sf in $df/marcxml:subfield
         let $found := fn:analyze-string(xs:string($sf), "(sh|sj|gf|no|nb|nr|ns|n|mp|dg)( )*([0-9]+)")
-        return 
+        return
             for $f in $found/fn:match
-                
+
             return fn:replace(fn:normalize-space(fn:string-join($f/fn:group, ""))," ","")
-    
-    let $properties := 
+
+    let $properties :=
         for $relatedlccn in $found_lccns
-        let $relatedscheme := 
+        let $relatedscheme :=
             if ( fn:starts-with($relatedlccn, "sh") ) then
                 (: presume this is LCSH :)
                 "subjects"
             else if ( fn:starts-with($relatedlccn, "sj") ) then
                 (: presume this is LCSH :)
                 "childrensSubjects"
-            else if ( fn:starts-with($relatedlccn, "gf") ) then                                        
+            else if ( fn:starts-with($relatedlccn, "gf") ) then
                 "genreForms"
             else if ( fn:starts-with($relatedlccn, "n") ) then
                 "names"
@@ -1596,12 +1649,12 @@ declare function marcxml2madsrdf:create-hasLaterForm-relation(
                 ""
         return
             element {$objprop} {
-                attribute rdf:resource { 
+                attribute rdf:resource {
                     fn:concat( "http://id.loc.gov/authorities/" , $relatedscheme , "/" , $relatedlccn )
                 }
             }
     return $properties
-    
+
 };
 
 
@@ -1609,19 +1662,19 @@ declare function marcxml2madsrdf:create-hasLaterForm-relation(
 -------------------------
 
     Creates MADS Notes:
-    
+
         $df as element() is the relevant marcxml:datafield
 
 -------------------------
 :)
 declare function marcxml2madsrdf:create-notes($df as element(), $scheme as xs:string) as element() {
-    
+
     let $tag := $df/@tag
     let $type := $marcxml2madsrdf:noteTypeMap/type[@tag=$tag]/text()
-    
+
     let $textparts :=
         for $sf in $df/marcxml:subfield
-            let $str := 
+            let $str :=
                 if ($sf/@code eq 'a') then
                      (: must have had a spectacularly good reason for this :)
                      (: too bad I cannot remember :)
@@ -1631,7 +1684,7 @@ declare function marcxml2madsrdf:create-notes($df as element(), $scheme as xs:st
             return $str
     let $text := fn:string-join($textparts, ' ')
 	let $note := element {$type} {$text}
-        
+
     return $note
 };
 
@@ -1640,18 +1693,18 @@ declare function marcxml2madsrdf:create-notes($df as element(), $scheme as xs:st
 (:~
 :   Creates MADS Relation
 :
-:   @param  $df        element() the relevant marcxml:datafield 
+:   @param  $df        element() the relevant marcxml:datafield
 :   @return relation as element()
 :)
 declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as element()* {
-    
+
     let $tag := $df/@tag
     let $df_suffix := fn:substring($df/@tag, 2, 2)
     let $df_sf_counts := fn:count($df/marcxml:subfield[@code ne 'w'])
     let $df_sf_two_code := $df/marcxml:subfield[2]/@code
     let $label := marcxml2madsrdf:generate-label($df,$df_suffix)
-    
-    let $rdfabout := 
+
+    let $rdfabout :=
         if ( fn:exists($df/marcxml:subfield[@code='0']) ) then
             let $u := xs:string($df/marcxml:subfield[@code='0'][1])
             return
@@ -1659,15 +1712,15 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                     attribute rdf:about {$u}
                 else if ( fn:contains($u, "(DLC)") ) then
                     attribute rdf:about { fn:concat("http://id.loc.gov/authorities/names/", fn:replace($u, ' |\(DLC\)', '')) }
-                else 
+                else
                     ()
         else
             ()
-        
-    let $relatedRWOs := 
+
+    let $relatedRWOs :=
         for $i in $df/marcxml:subfield[@code='1']
         return <madsrdf:identifiesRWO rdf:resource="{$i}" />
-    
+
     let $wstr := xs:string($df/marcxml:subfield[@code='w'][1]/text())
     let $ws := fn:tokenize($wstr , "[a-z]")
     return
@@ -1677,25 +1730,25 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
             let $auth := fn:true()
             let $aORv := "Authority"
             let $authorityType := marcxml2madsrdf:get-authority-type($df,$auth, $scheme)
-            let $labelProp := "madsrdf:authoritativeLabel" 
+            let $labelProp := "madsrdf:authoritativeLabel"
             let $components := marcxml2madsrdf:create-components-from-DFxx($df, $auth, $scheme)
-            let $componentList := 
-                if ($components) then marcxml2madsrdf:create-component-list($components, $auth) 
+            let $componentList :=
+                if ($components) then marcxml2madsrdf:create-component-list($components, $auth)
                 else ()
-            
+
             let $elements := marcxml2madsrdf:create-elements-from-DFxx($df, $scheme)
-            let $elementList := 
-                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements) 
+            let $elementList :=
+                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements)
                 else ()
-        
-            let $relation := 
+
+            let $relation :=
                 element {$type} {
                     element {$authorityType} {
                         $rdfabout,
                         element rdf:type {
                             attribute rdf:resource { fn:concat( xs:string( fn:namespace-uri-for-prefix("madsrdf", <madsrdf:blah/>) ) , $aORv ) }
                         },
-                        element {$labelProp} { 
+                        element {$labelProp} {
                           if ($scheme eq "names") then
                             text {$label}
                           else (
@@ -1706,13 +1759,13 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                         $componentList,
                         $elementList,
                         $relatedRWOs
-                    }                    
+                    }
                 }
             return $relation
-        else 
+        else
             for $c at $pos in fn:string-to-codepoints($wstr)
                 let $w := fn:codepoints-to-string($c)
-                return 
+                return
                 if ($w ne "n" and $pos != 4) then
                     let $type := $marcxml2madsrdf:relationTypeMap/type[@pos eq xs:string($pos) and @w eq $w]/text()
                     return
@@ -1726,26 +1779,26 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                                 if ($auth) then
                                     "Authority"
                                 else
-                                    "Variant"     
-                    
+                                    "Variant"
+
                             let $authorityType := marcxml2madsrdf:get-authority-type($df,$auth, $scheme)
-                            let $labelProp := 
+                            let $labelProp :=
                                 if ($auth) then
                                     "madsrdf:authoritativeLabel"
                                 else
                                     "madsrdf:variantLabel"
-                        
+
                             let $components := marcxml2madsrdf:create-components-from-DFxx($df, $auth, $scheme)
-                            let $componentList := 
-                                if ($components) then marcxml2madsrdf:create-component-list($components, $auth) 
+                            let $componentList :=
+                                if ($components) then marcxml2madsrdf:create-component-list($components, $auth)
                                 else ()
-                    
+
                             let $elements := marcxml2madsrdf:create-elements-from-DFxx($df, $scheme)
-                            let $elementList := 
-                                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements) 
+                            let $elementList :=
+                                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements)
                                 else ()
-        
-                            let $relation := 
+
+                            let $relation :=
                                     element {$type} {
                                         element {$authorityType} {
                                             $rdfabout,
@@ -1763,10 +1816,10 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                                             $componentList,
                                             $elementList,
                                             $relatedRWOs
-                                        }                    
+                                        }
                                     }
                             return $relation
-                        else 
+                        else
                             ()
                 else if ($w ne "n" and $pos = 4) then
                     let $type := $marcxml2madsrdf:relationTypeMap/type[@pos eq xs:string($pos) and @w eq $w]/text()
@@ -1781,26 +1834,26 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                                 if ($auth) then
                                     "Authority"
                                 else
-                                    "Variant"     
-                    
+                                    "Variant"
+
                             let $authorityType := marcxml2madsrdf:get-authority-type($df,$auth,$scheme)
-                            let $labelProp := 
+                            let $labelProp :=
                                 if ($auth) then
                                     "madsrdf:authoritativeLabel"
                                 else
                                     "madsrdf:variantLabel"
-                        
+
                             let $components := marcxml2madsrdf:create-components-from-DFxx($df, $auth, $scheme)
-                            let $componentList := 
-                                if ($components) then marcxml2madsrdf:create-component-list($components, $auth) 
+                            let $componentList :=
+                                if ($components) then marcxml2madsrdf:create-component-list($components, $auth)
                                 else ()
-                    
+
                             let $elements := marcxml2madsrdf:create-elements-from-DFxx($df, $scheme)
-                            let $elementList := 
-                                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements) 
+                            let $elementList :=
+                                if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements)
                                 else ()
-        
-                            let $relation := 
+
+                            let $relation :=
                                     element {$type} {
                                         element {$authorityType} {
                                             $rdfabout,
@@ -1812,15 +1865,15 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
                                                 text {$label}
                                               else (
                                                 attribute xml:lang {"en"},
-                                                text {$label} ) 
+                                                text {$label} )
                                             },
                                             $componentList,
                                             $elementList,
                                             $relatedRWOs
-                                        }                    
+                                        }
                                     }
                             return $relation
-                        else 
+                        else
                             ()
                 else ()
 };
@@ -1828,61 +1881,61 @@ declare function marcxml2madsrdf:create-relation($df as element(), $scheme) as e
 (:~
 :   Creates MADS RWO Class
 :
-:   @param  $df        	element() the relevant marcxml:datafield 
-:   @param  $identifier        string of the marc001 
+:   @param  $df        	element() the relevant marcxml:datafield
+:   @param  $identifier        string of the marc001
 :   @return relation as element()
 :)
 declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifier as xs:string) as element()* {
     let $df034 := $record/marcxml:datafield[@tag='034']
     let $df046 := $record/marcxml:datafield[@tag='046']
-    let $df368 := $record/marcxml:datafield[@tag='368'] 
-    let $df370 := $record/marcxml:datafield[@tag='370']    
-    let $df371 := $record/marcxml:datafield[@tag='371'] 
-    let $df372 := $record/marcxml:datafield[@tag='372'] 
-    let $df373 := $record/marcxml:datafield[@tag='373'] 
-    let $df374 := $record/marcxml:datafield[@tag='374'] 
-    let $df375 := $record/marcxml:datafield[@tag='375']  
-    let $df376 := $record/marcxml:datafield[@tag='376'] 
-    let $df377 := $record/marcxml:datafield[@tag='377'] 
-    let $df380 := $record/marcxml:datafield[@tag='380'] 
-    
+    let $df368 := $record/marcxml:datafield[@tag='368']
+    let $df370 := $record/marcxml:datafield[@tag='370']
+    let $df371 := $record/marcxml:datafield[@tag='371']
+    let $df372 := $record/marcxml:datafield[@tag='372']
+    let $df373 := $record/marcxml:datafield[@tag='373']
+    let $df374 := $record/marcxml:datafield[@tag='374']
+    let $df375 := $record/marcxml:datafield[@tag='375']
+    let $df376 := $record/marcxml:datafield[@tag='376']
+    let $df377 := $record/marcxml:datafield[@tag='377']
+    let $df380 := $record/marcxml:datafield[@tag='380']
+
     let $types := (
-            if ($record/marcxml:datafield[@tag='100'] and fn:string($record/marcxml:datafield[@tag='100']/@ind1)!="3" and 
+            if ($record/marcxml:datafield[@tag='100'] and fn:string($record/marcxml:datafield[@tag='100']/@ind1)!="3" and
                 fn:not($record/marcxml:datafield[@tag='100']/marcxml:subfield[fn:matches(@code , '[efhklmnoprstvxyz]')])
                 ) then
                 (<rdf:type rdf:resource="http://id.loc.gov/ontologies/bibframe/Person"/>,
 					<rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>)
-            else if ($record/marcxml:datafield[@tag='100'] and fn:string($record/marcxml:datafield[@tag='100']/@ind1)="3"                 
+            else if ($record/marcxml:datafield[@tag='100'] and fn:string($record/marcxml:datafield[@tag='100']/@ind1)="3"
                 ) then
                 (<rdf:type rdf:resource="http://id.loc.gov/ontologies/bibframe/Family"/>,
 				<rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Group"/>)
-					 
+
             else (),
             if ($record/marcxml:datafield[@tag='110']
                 (:and fn:not($record/marcxml:datafield[@tag='110']/marcxml:subfield[fn:matches(@code , '[efhklmnoprstvxyz]')]):)
                 ) then
                 (<rdf:type rdf:resource="http://id.loc.gov/ontologies/bibframe/Organization"/>,
 				<rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>)
-				
+
             else (),
 			if ($record/marcxml:datafield[@tag='111']               ) then
                 ( <rdf:type rdf:resource="http://id.loc.gov/ontologies/bibframe/Meeting"/>
 					(:, <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>:)
 				)
-				
+
             else (),
             if ($record/marcxml:datafield[@tag='151']) then
                 <rdf:type rdf:resource="http://www.loc.gov/standards/mads/rdf/v1#Geographic"/>
             else ()
             )
 
-    let $properties := 
-        ( 	
+    let $properties :=
+        (
             element rdfs:label { fn:normalize-space(fn:string($record/marcxml:datafield[@tag='100' or @tag='110' or @tag='111'  or @tag='151'])) },
          (:  for $df in $record/marcxml:datafield[@tag="034"]
-             let $polygon := 
+             let $polygon :=
               marcxml2madsrdf:generate-polygon(
-                fn:string($df/marcxml:subfield[@code="d"]), 
+                fn:string($df/marcxml:subfield[@code="d"]),
                 fn:string($df/marcxml:subfield[@code="e"]),
                 fn:string($df/marcxml:subfield[@code="f"]),
                 fn:string($df/marcxml:subfield[@code="g"])
@@ -1910,7 +1963,7 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
             let $note := xs:string($df/marcxml:subfield[@code='v'][1])
             return
                 for $sf in $df/marcxml:subfield[fn:matches(@code, "[fgstqr]")]
-                let $prop := 
+                let $prop :=
                     if ($sf/@code = 'f') then
                         "madsrdf:birthDate"
                     else if ($sf/@code = 'g') then
@@ -1923,10 +1976,10 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                         "madsrdf:establishDate"
                     else if ($sf/@code = 'r') then
                         "madsrdf:terminateDate"
-                    else 
+                    else
                         "dcterms:date"
                 let $d := xs:string($sf)
-                let $dateElement := 
+                let $dateElement :=
                     if ($dtype eq "edtf" and shared:valid-edtf-date($d)) then
                         element {$prop} {
                             attribute rdf:datatype {"http://id.loc.gov/datatypes/edtf/EDTF"},
@@ -1944,14 +1997,14 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                                 element {$prop} {
                                     $d
                                 }
-                let $noteElement := 
+                let $noteElement :=
                     if ($note ne "") then
                         <madsrdf:note>{fn:concat("Date ", xs:string($dateElement), " -- " , $note)}</madsrdf:note>
                     else
                         ()
                 return ($dateElement, $noteElement)
             ,
-            
+
             (: 368 :)
             for $df in $df368[marcxml:subfield[fn:matches(@code, "[abcd]")]]
             let $source :=
@@ -1963,7 +2016,7 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                     ()
             let $sfContent := $df/marcxml:subfield[fn:matches(@code, "[abcd]")][1]
             let $code := xs:string($sfContent/@code)
-            let $elementName := 
+            let $elementName :=
                 if ( $code eq "d" ) then
                     "madsrdf:honoraryTitle"
                 else
@@ -1995,7 +2048,7 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                     ()
             let $sfContent := $df/marcxml:subfield[fn:matches(@code, "[abcef]")][1]
             let $code := xs:string($sfContent/@code)
-            let $elementName := 
+            let $elementName :=
                 if ( $code eq "a" ) then
                     "madsrdf:birthPlace"
                 else if ( $code eq "a" ) then
@@ -2043,7 +2096,7 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                          else (),
                          if ($sf/marcxml:subfield[@code='d']) then
                               element madsrdf:country {$sf/marcxml:subfield[@code='d']/text()}
-                         else (),    
+                         else (),
                          if ($sf/marcxml:subfield[@code='e']) then
                               element madsrdf:postcode{$sf/marcxml:subfield[@code='e']/text()}
                          else ()
@@ -2052,7 +2105,7 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                          return
                              element madsrdf:email {$esf/text()},
                        for $so in $sf/marcxml:subfield[fn:matches(@code,'(v|u)')]
-                         return 
+                         return
                             element madsrdf:hasSource {
                               element madsrdf:Source{
                                 element rdfs:label {$so/text()}
@@ -2060,13 +2113,13 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                 }},
             for $df in $df372
 			 	let $source:=if ($df/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2']),") ") else ("")
-                return 
+                return
                   (for $sf in $df/marcxml:subfield[fn:matches(@code, '(a|s|t)')]
                         return element madsrdf:fieldOfActivity {
                                    element skos:Concept {
                                     element rdfs:label {fn:concat($source, $sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code,'(v|u|0)')]
-                                      return 
+                                      return
                                         element madsrdf:hasSource {
                                             element madsrdf:Source{
                                                element rdfs:label {$sf/text()}
@@ -2093,87 +2146,87 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                                     $df/marcxml:subfield[@code='t']/text()}
                              else (),
                              for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                return 
+                                return
                                    element madsrdf:hasSource {
                                      element madsrdf:Source{
                                        element rdfs:label {$sf/text()}
                                    }}
-                           }}, 
+                           }},
             for $df in $df374
 				let $source:=if ($df/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2']),") ") else ("")
-                return 
+                return
                    ( for $sf in $df/marcxml:subfield[@code='a']
                         return element madsrdf:occupation {
                                 element madsrdf:Occupation {
                                     element rdfs:label {fn:concat($source,$sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                        return 
+                                        return
                                            element madsrdf:hasSource {
                                              element madsrdf:Source{
                                                element rdfs:label {$sf/text()}
                                            }}
-                                    
+
                                 }}
-                    ),	
+                    ),
             (:
             for $df in $df375
 				let $source:=if ($df/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2']),") ") else ("")
-                return 
+                return
                    ( for $sf in $df/marcxml:subfield[@code='a']
                         return element madsrdf:gender {
                                  element skos:Concept {
-                                    element rdfs:label {fn:concat($source,$sf/text())},  
+                                    element rdfs:label {fn:concat($source,$sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
+                                    return
                                        element madsrdf:hasSource {
                                          element madsrdf:Source{
                                            element rdfs:label {$sf/text()}
                                        }}
                               }}
-                    ),	
+                    ),
             :)
             for $df in $df376
 				let $source:=if ($df/marcxml:subfield[@code='2']) then fn:concat("(", fn:string($df/marcxml:subfield[@code='2']),") ") else ("")
-                return 
+                return
                    ( for $sf in $df/marcxml:subfield[@code='a']
                         return element madsrdf:entityDescriptor {
                                  element skos:Concept {
-                                    element rdfs:label {fn:concat($source,$sf/text())},  
+                                    element rdfs:label {fn:concat($source,$sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
+                                    return
                                        element madsrdf:hasSource {
                                          element madsrdf:Source{
                                            element rdfs:label {$sf/text()}
                                        }}
-                              }},	
+                              }},
                     for $sf in $df/marcxml:subfield[@code='b']
                         return element madsrdf:prominentFamilyMember {
                                  element skos:Concept {
-                                    element rdfs:label {fn:concat($source,$sf/text())},  
+                                    element rdfs:label {fn:concat($source,$sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
+                                    return
                                        element madsrdf:hasSource {
                                          element madsrdf:Source{
                                            element rdfs:label {$sf/text()}
                                        }}
-                              }},	
+                              }},
                     for $sf in $df/marcxml:subfield[@code='c']
                         return element madsrdf:honoraryTitle {
                                  element skos:Concept {
-                                    element rdfs:label {fn:concat($source,$sf/text())},  
+                                    element rdfs:label {fn:concat($source,$sf/text())},
                                     for $sf in $df/marcxml:subfield[fn:matches(@code, '(u|v|0)')]
-                                    return 
+                                    return
                                        element madsrdf:hasSource {
                                          element madsrdf:Source{
                                            element rdfs:label {$sf/text()}
                                        }}
                               }}
                    ),
-            
+
             for $sfa in $df377/marcxml:subfield[@code = "a"]
             let $df := $sfa/parent::node()
             let $source := xs:string($df/marcxml:subfield[@code='2'][1])
-            let $source := 
+            let $source :=
                 if ( $source ne "" ) then
                     if ( fn:contains($source, "iso639-1") ) then
                         "iso639-1"
@@ -2181,17 +2234,17 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                         "iso639-2"
                     else if ( fn:contains($source, "iso639-3") ) then
                         "iso639-3"
-                    else 
+                    else
                         "languages"
-                else 
+                else
                     "languages"
             let $sfa_str := fn:normalize-space(xs:string($sfa))
-            let $codes := 
+            let $codes :=
                 if ( fn:matches($sfa_str, ', | ') ) then
                     for $c in fn:tokenize($sfa_str, ', | ')
                     let $c_str := fn:normalize-space($c)
-                    where 
-                        fn:matches($c_str, "[a-z]+") and $c_str ne "rda" and 
+                    where
+                        fn:matches($c_str, "[a-z]+") and $c_str ne "rda" and
                         (fn:string-length($c_str) eq 2 or fn:string-length($c_str) eq 3)
                     return $c_str
                 else
@@ -2203,10 +2256,10 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
                         attribute rdf:resource { fn:concat( "http://id.loc.gov/vocabulary/", $source, "/", $code ) }
                     }
             ,
-            
+
             for $sfl in $df377/marcxml:subfield[@code = "l"]
             where fn:not(fn:contains($sfl, "language term"))
-            return 
+            return
                 element madsrdf:associatedLanguage {
                     element madsrdf:Language {
                         element rdfs:label { xs:string($sfl) }
@@ -2215,14 +2268,23 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
        )
 	   (:<!-- if ($types/rdf:type/@rdf:resource!='http://www.loc.gov/standards/mads/rdf/v1.html#Geographic') then -->
 					<!-- attribute rdf:resource {"http://id.loc.gov/rwo/agents/"}, -->
-					           
+
 				<!-- else () -->:)
-				
-    let $rwo := 
+
+    let $authLink:=
+        element madsrdf:isIdentifiedByAuthority {
+            attribute rdf:resource {
+                fn:concat("http://id.loc.gov/authorities/names/", fn:string($record/marcxml:controlfield[@tag="001"]))
+            }
+        }
+
+    let $rwo :=
         (if ($types) then
-            element madsrdf:identifiesRWO {  
+            element madsrdf:identifiesRWO {
                 element madsrdf:RWO {attribute rdf:about {fn:concat("http://id.loc.gov/rwo/agents/",fn:normalize-space($identifier))},
-					$types,$properties				
+					$types,
+                    $properties,
+                    $authLink
 				}
             }
         else ()
@@ -2237,55 +2299,55 @@ declare function marcxml2madsrdf:create-rwoClass($record as element(), $identifi
 -------------------------
 
     Creates MADS Sources:
-    
+
         $df as element() is the relevant marcxml:datafield
 
 -------------------------
 :)
 declare function marcxml2madsrdf:create-source($df as element(), $scheme) as element() {
-    
+
     let $tag := $df/@tag
-        
-    let $citation_source_element := 
+
+    let $citation_source_element :=
         (
             if ($df/marcxml:subfield[@code eq 'a']/text()) then
                 <madsrdf:citationSource>{$df/marcxml:subfield[@code eq 'a']/text()}</madsrdf:citationSource>
             else (),
-            
+
             for $u in $df/marcxml:subfield[@code eq 'u']
             let $uo := xs:string($u)
-            let $u := fn:normalize-space(xs:string($u)) 
-            let $u := fn:replace($u, "\\", "%5C") 
-            return 
+            let $u := fn:normalize-space(xs:string($u))
+            let $u := fn:replace($u, "\\", "%5C")
+            return
                 if (shared:validate-uri($u)) then
                     <madsrdf:citationSource rdf:resource="{xs:string($u)}" />
                 else (
                     <madsrdf:citationSource>{$uo}</madsrdf:citationSource>
                 )
         )
-    let $status_element := 
+    let $status_element :=
         if ($tag eq '670') then
             <madsrdf:citationStatus>found</madsrdf:citationStatus>
-        else 
-            <madsrdf:citationStatus>notfound</madsrdf:citationStatus>    
+        else
+            <madsrdf:citationStatus>notfound</madsrdf:citationStatus>
     let $textparts :=
         for $sf in $df/marcxml:subfield[fn:not(fn:matches(@code,'(a|u)'))]
-            let $str := 
+            let $str :=
                 if ($sf/@code eq 'u') then
                     fn:concat('{' , $sf/text() , '}')
                 else
                     $sf/text()
             return $str
     let $text := fn:string-join($textparts, ' ')
-    let $text_element := 
+    let $text_element :=
         if (fn:normalize-space($text)) then
           if ($scheme eq "names") then
             <madsrdf:citationNote>{$text}</madsrdf:citationNote>
           else
             <madsrdf:citationNote xml:lang="en">{$text}</madsrdf:citationNote>
         else ()
-               
-    let $source := 
+
+    let $source :=
             element madsrdf:Source {
                 $citation_source_element,
                 $text_element,
@@ -2298,32 +2360,76 @@ declare function marcxml2madsrdf:create-source($df as element(), $scheme) as ele
 (:~
 :   Creates a Variant.
 :
-:   @param  $df        element() is the subfield   
+:   @param  $df        element() is the subfield
 :   @return madsrdf:hasVariant/child::node()[1] as element()
 :)
 declare function marcxml2madsrdf:create-variant($df as element(), $scheme) as element() {
-    
+
     let $tag := $df/@tag
     let $df_suffix := fn:substring($df/@tag, 2, 2)
     let $df_sf_counts := fn:count($df/marcxml:subfield[@code ne 'w'])
     let $df_sf_two_code := $df/marcxml:subfield[2]/@code
     let $label := marcxml2madsrdf:generate-label($df,$df_suffix)
-            
+    
+    let $script := sharedml:get-script($label)
+    let $xmllang := 
+        if ($scheme eq "names") then
+            "zxx"
+        else
+            "en"
+    let $langattribute := 
+        attribute xml:lang {
+            if ($scheme eq "names") then
+                fn:concat($xmllang, "-", $script)
+            else
+                $xmllang
+        }
+    let $dfWith7 :=
+        element marcxml:datafield {
+            $df/@*,
+            $df/marcxml:subfield,
+            element marcxml:subfield {
+                attribute code {"7"},
+                fn:concat("[bcp47]", $xmllang, "-", $script)
+            }
+        }
+    let $vMarcKey := 
+        if ($scheme eq "names") then
+            marcxml2madsrdf:generate-marcKey($dfWith7)
+        else
+            ()
+    (: 
+        Commenting out the below for now (20240908).  Going with "not applicable" as 
+        it may be the safest thing for names.
+    let $language := 
+        if (ancestor::marcxml:record/marcxml:datafield[@tag = "370"]/marcxml:subfield[@code = "a"]) then
+            let $lang := xs:string(ancestor::marcxml:record/marcxml:datafield[@tag = "370"]/marcxml:subfield[@code = "a"][1])
+            let $iso6392match := $constants-languages:LANG-WALK/language[iso6392 = $lang]
+            return
+			    if ( fn:not(fn:empty($iso6392match))) then
+                    xs:string($iso6392match/@xmllang)
+                else
+                    $lang
+        else
+            "zxx"
+    :)
+    
+
     let $type := marcxml2madsrdf:get-authority-type($df, fn:false(), "" )
-            
+
     let $components := marcxml2madsrdf:create-components-from-DFxx($df, fn:false(), $scheme)
-    let $componentList := 
-        if ($components) then marcxml2madsrdf:create-component-list($components, fn:false()) 
+    let $componentList :=
+        if ($components) then marcxml2madsrdf:create-component-list($components, fn:false())
         else ()
-        
+
     let $elements := marcxml2madsrdf:create-elements-from-DFxx($df, $scheme)
-    let $elementList := 
-        if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements) 
+    let $elementList :=
+        if ($elements and fn:not($componentList)) then marcxml2madsrdf:create-element-list($elements)
         else ()
-        
+
     let $nodeID := marcxml2madsrdf:generate-nodeID($label,fn:false())
-            
-    let $variant := 
+
+    let $variant :=
             element {$type} {
                 (: attribute rdf:nodeID {$nodeID}, :)
                 element rdf:type {
@@ -2338,16 +2444,14 @@ declare function marcxml2madsrdf:create-variant($df as element(), $scheme) as el
                 },
             :)
                 element madsrdf:variantLabel {
-                  if ($scheme eq "names") then
-                    text {$label}
-                  else
-                   ( attribute xml:lang {"en"},
-                    text {$label}) 
+                    $langattribute,
+                    $label
                 },
                 $componentList,
-                $elementList     
+                $elementList,
+                $vMarcKey
             }
-        
+
     return $variant
 };
 
@@ -2356,7 +2460,7 @@ declare function marcxml2madsrdf:create-variant($df as element(), $scheme) as el
 -------------------------
 
     Determines, and returns, the appropriate MADS Authority or Variant type:
-    
+
         $df as element() is the relevant marcxml:datafield
 
 -------------------------
@@ -2369,12 +2473,12 @@ declare function marcxml2madsrdf:get-authority-type($df as element(), $authority
     let $authority_test :=
         if ($df682) then
             fn:false()
-        else 
+        else
             $authority
-            
-    let $union := 
+
+    let $union :=
         if (
-            $df/marcxml:subfield[@code='a'] and 
+            $df/marcxml:subfield[@code='a'] and
             fn:matches( fn:string-join($df/marcxml:subfield[@code!="a"]/@code, ''), '[tvxyz]')
             ) then
                 fn:true()
@@ -2384,26 +2488,26 @@ declare function marcxml2madsrdf:get-authority-type($df as element(), $authority
                 $df/marcxml:subfield[2][fn:matches(@code, 'v|x|y|z')]
             ) then
             fn:true()
-        else 
+        else
             fn:false()
-            
+
     let $t := $df/marcxml:subfield[@code="t"]
     let $not_hg := fn:matches( fn:string-join($df/marcxml:subfield/@code , ''), '[a-f|h-z]')
-    let $type_element := 
+    let $type_element :=
         if ($union) then
             if (fn:matches($df_suffix , '00|10|11') and $t) then
-                $marcxml2madsrdf:marc2madsMap/map[@tag_suffix=$df_suffix and @count='2' and fn:contains(@subfield , 't') ] 
+                $marcxml2madsrdf:marc2madsMap/map[@tag_suffix=$df_suffix and @count='2' and fn:contains(@subfield , 't') ]
             else if (
                 fn:matches($df_suffix , '80|81|82|85') and
                 $df/marcxml:subfield[2][fn:matches(@code, 'v|x|y|z')]
                 ) then
                  $marcxml2madsrdf:marc2madsMap/map[@tag_suffix=$df_suffix and @count='2']
-            else 
+            else
                 $marcxml2madsrdf:marc2madsMap/map[@tag_suffix=$df_suffix and @count='2' and fn:contains(@subfield , $df_sf_two_code) ]
         else
             $marcxml2madsrdf:marc2madsMap/map[@tag_suffix=$df_suffix and @count='1']
 
-    let $type := 
+    let $type :=
         if ($authority_test) then
             $type_element/authority/text()
         else
@@ -2415,7 +2519,7 @@ declare function marcxml2madsrdf:get-authority-type($df as element(), $authority
 					"madsrdf:Authority"
 				else
 	 				$type
-            
+
     return $type
 
 };
@@ -2424,34 +2528,34 @@ declare function marcxml2madsrdf:get-authority-type($df as element(), $authority
 :   This function creates a proper nodeID value
 :
 :   @param  $df         marcxml datafield element
-:   @param  $df_suffix  last two characters of marc/datafield tag value 
+:   @param  $df_suffix  last two characters of marc/datafield tag value
 :   @return specially formatted string for use as lexical label
 :)
 declare function marcxml2madsrdf:generate-label($df as element(), $df_suffix as xs:string) as xs:string {
-    let $label := 
+    let $label :=
         if (fn:matches($df_suffix, ("00|10|11|30"))) then
             fn:concat(
                 fn:string-join(
                     $df/marcxml:subfield[
-                        @code ne 'w' and 
-                        @code!='v' and @code!='x' and @code!='y' and @code!='z' and 
+                        @code ne 'w' and
+                        @code!='v' and @code!='x' and @code!='y' and @code!='z' and
                         @code!='6' and @code!='i' and @code!='0' and @code!='1'
-                    ], 
+                    ],
                     ' '
                 ),
                 if ( $df/marcxml:subfield[@code='v' or @code='x' or @code='y' or @code='z'] ) then
                     fn:concat("--",fn:string-join($df/marcxml:subfield[@code='v' or @code='x' or @code='y' or @code='z'] , '--'))
                 else ""
-            )   
+            )
         else
             fn:string-join($df/marcxml:subfield[fn:not(fn:matches(@code, "[wi01468]"))] , '--')
             (:      let $label := fn:string-join($df/marcxml:subfield[@code ne 'w' and @code ne '6'] , '--')
-              let $label := 
+              let $label :=
                 if ( fn:ends-with($label, ".") ) then
                     fn:substring($label, 1, (fn:string-length($label) - 1))
-                else 
+                else
                     $label
-            
+
             return $label  :)
 
     return fn:normalize-space($label)
@@ -2461,23 +2565,35 @@ declare function marcxml2madsrdf:generate-gacs($aLabel as xs:string, $df043s as 
     if ( fn:count($df043s) > 0 ) then
         for $a in $df043s/marcxml:subfield[@code = 'a']
         return <madsrdf:code rdf:datatype="http://id.loc.gov/datatypes/codes/gac">{xs:string($a)}</madsrdf:code>
+    else if ( fn:exists($constants-countries-gacs:GACS-LCSH/match/prefLabel[. = $aLabel]) ) then
+        let $gac := xs:string($constants-countries-gacs:GACS-LCSH/match[prefLabel[. = $aLabel]]/gaccode)
+        let $g :=
+                    fn:concat(
+                        $gac,
+                        fn:string-join((for $i in 1 to (7 - fn:string-length($gac)) return '-'), "")
+                    )
+        return <madsrdf:code rdf:datatype="http://id.loc.gov/datatypes/codes/gac">{xs:string($g)}</madsrdf:code>
     else
-        let $match := fn:analyze-string($aLabel, "(\()([a-zA-Z0-9,:\. ]+)(\))") 
+        let $match := fn:analyze-string($aLabel, "(\()([a-zA-Z0-9,:\. ]+)(\))")
         let $parts := fn:tokenize($match/s:match[fn:last()]/s:group[@nr=2], "[,:]| and")
-        let $gacs := 
+        
+        let $gacs1 :=
             for $p in $parts
             let $needle := fn:normalize-space($p)
             return xs:string($constants-countries-gacs:COUNTRIES-GACS/country-gac[. = $needle]/@gac-normalized)
-        let $gacs := 
-            if ( fn:count($gacs) eq 0 ) then
-                for $p in $parts
-                let $needle := fn:normalize-space($p)
-                return xs:string($constants-countries-gacs:GEO-ABBREVIATIONS/geo-abbreviation[@abbreviation = $needle]/@gac)
-            else
-                $gacs
+        let $gacs2 :=
+            for $p in $parts
+            let $needle := fn:normalize-space($p)
+            return xs:string($constants-countries-gacs:GEO-ABBREVIATIONS/geo-abbreviation[@abbreviation = $needle]/@gac)
+        let $gacs3 :=
+            for $p in $parts
+            let $needle := fn:normalize-space($p)
+            return xs:string($constants-countries-gacs:GACS-LCSH/match[prefLabel = $needle]/gaccode)
+            
+            
         return
-            for $gac in $gacs
-            let $g := 
+            for $gac in fn:distinct-values( ($gacs1, $gacs2, $gacs3) )
+            let $g :=
                     fn:concat(
                         $gac,
                         fn:string-join((for $i in 1 to (7 - fn:string-length($gac)) return '-'), "")
@@ -2495,21 +2611,30 @@ declare function marcxml2madsrdf:generate-marcKey($df as element()) as element(b
     let $f := xs:string($df/@tag)
     let $ind1 := xs:string($df/@ind1)
     let $ind2 := xs:string($df/@ind2)
+    let $bcp47 := fn:replace( xs:string($df/marcxml:subfield[@code eq '7' and fn:contains(., '[bcp47]')][1]), '\[bcp47\]', '' )
     let $subfields :=
         for $sf in $df/marcxml:subfield
+        where fn:not($sf[@code eq '7' and fn:contains(., '[bcp47]')])
         return fn:concat('$', xs:string($sf/@code), xs:string($sf))
-    return element bflc:marcKey { fn:concat($f, $ind1, $ind2, fn:string-join($subfields, '')) }
+    return 
+        element bflc:marcKey { 
+            if ($bcp47 ne "") then
+                attribute xml:lang {$bcp47}
+            else
+                (),
+            fn:concat($f, $ind1, $ind2, fn:string-join($subfields, '')) 
+        }
 };
 
 (:~
 :   This function creates a proper nodeID value
 :
-:   @param  $label       lexical authority or variant label 
+:   @param  $label       lexical authority or variant label
 :   @param  $authority   boolean, true if authority, false if variant
 :   @return specially formatted string for use as an RDF/XML nodeID/bnode
 :)
-declare function marcxml2madsrdf:generate-nodeID($label as xs:string, 
-                                      $authority as xs:boolean) 
+declare function marcxml2madsrdf:generate-nodeID($label as xs:string,
+                                      $authority as xs:boolean)
 as xs:string
 {
     let $firstLetter := if ($authority) then "a" else "v"
@@ -2527,18 +2652,18 @@ as xs:string
 
 declare function marcxml2madsrdf:coordinates-DMStoDD($DMS as xs:string) as xs:string
 {
-  let $DMS := 
-        if (fn:matches(fn:substring($DMS, 1, 1), '[a-zA-Z]')) then 
-            fn:substring($DMS, 2) 
+  let $DMS :=
+        if (fn:matches(fn:substring($DMS, 1, 1), '[a-zA-Z]')) then
+            fn:substring($DMS, 2)
         else $DMS
   let $deg := fn:number(fn:substring($DMS, 1, 2))
   let $min := fn:number(fn:substring($DMS, 3, 2))
   let $sec := fn:number(fn:substring($DMS, 5))
   let $DD := $deg + ($min div 60) + ($sec div 3600)
-  
-  return 
+
+  return
     fn:string($DD)
-  
+
 };
 
 
@@ -2548,21 +2673,16 @@ declare function marcxml2madsrdf:generate-polygon($dwest as xs:string, $eeast as
   let $eastbc  := marcxml2madsrdf:coordinates-DMStoDD($eeast)
   let $northbc := marcxml2madsrdf:coordinates-DMStoDD($fnorth)
   let $southbc := marcxml2madsrdf:coordinates-DMStoDD($gsouth )
-  
+
   let $wn := fn:string-join(($westbc, $northbc), " ")
   let $en := fn:string-join(($eastbc, $northbc), " ")
   let $es := fn:string-join(($eastbc, $southbc), " ")
   let $ws := fn:string-join(($westbc, $southbc), " ")
-  
+
   let $points := fn:string-join(($wn, $en,$es, $ws, $wn), ", ")
   let $polygon := fn:concat("POLYGON((", $points)
   let $polygon := fn:concat($polygon, "))")
-  
-  return 
+
+  return
     $polygon
 };
-(: Stylus Studio meta-information - (c) 2004-2005. Progress Software Corporation. All rights reserved.
-<metaInformation>
-<scenarios/><MapperMetaTag><MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="" destSchemaRoot="" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no"/><MapperBlockPosition></MapperBlockPosition><TemplateContext></TemplateContext></MapperMetaTag>
-</metaInformation>
-:)

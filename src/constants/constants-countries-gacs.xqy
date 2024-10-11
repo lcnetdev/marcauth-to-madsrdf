@@ -221,6 +221,7 @@ declare variable $constants-countries-gacs:COUNTRIES-GACS as element() :=
     <country-gac gac-normalized="n-us-ri" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/n-us-ri">Rhode Island</country-gac>
     <country-gac gac-normalized="e-rm" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/e-rm">Romania</country-gac>
     <country-gac gac-normalized="f-rw" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/f-rw">Rwanda</country-gac>
+    <country-gac gac-normalized="e-uk-st" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/e-uk-st">Scotland</country-gac>
     <country-gac gac-normalized="f-sa" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/f-sa">South Africa</country-gac>
     <country-gac gac-normalized="nwsc" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/nwsc">Saint-Barthélemy</country-gac>
     <country-gac gac-normalized="n-us-sc" gac-uri="http://id.loc.gov/vocabulary/geographicAreas/n-us-sc">South Carolina</country-gac>
@@ -369,6 +370,7 @@ declare variable $constants-countries-gacs:GEO-ABBREVIATIONS as element() :=
     <geo-abbreviation abbreviation="Vic." gac="u-at-vi" />
     <geo-abbreviation abbreviation="W.A." gac="u-at-we" />
  
+    <geo-abbreviation abbreviation="N.Z." gac="u-nz" />
     
     <geo-abbreviation abbreviation="P.R." gac="nwpr" />
     <geo-abbreviation abbreviation="U.S." gac="n-us" />
@@ -391,3 +393,852 @@ declare variable $constants-countries-gacs:GEO-ABBREVIATIONS as element() :=
     <geo-abbreviation abbreviation="Canada" gac="n-cn" />
     
 </geo-abbreviations>;
+
+declare variable $constants-countries-gacs:GACS-LCSH as element() :=
+<matches>
+	<match>
+		<prefLabel>Africa</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001531</lcshuri>
+		<gaccode>f</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, Central</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001578</lcshuri>
+		<gaccode>fc</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, Eastern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001596</lcshuri>
+		<gaccode>fe</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, French-speaking Equatorial</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001608</lcshuri>
+		<gaccode>fq</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, North</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001631</lcshuri>
+		<gaccode>ff</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, Northeast</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001645</lcshuri>
+		<gaccode>fh</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, Southern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001653</lcshuri>
+		<gaccode>fs</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, Sub-Saharan</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001667</lcshuri>
+		<gaccode>fb</gaccode>
+	</match>
+	<match>
+		<prefLabel>Africa, West</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85001688</lcshuri>
+		<gaccode>fw</gaccode>
+	</match>
+	<match>
+		<prefLabel>Alps</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85003839</lcshuri>
+		<gaccode>ea</gaccode>
+	</match>
+	<match>
+		<prefLabel>Amazon River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85004135</lcshuri>
+		<gaccode>sa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Amur River (China and Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85004697</lcshuri>
+		<gaccode>aa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Andes</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85004898</lcshuri>
+		<gaccode>sn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Antilles, Lesser</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85005688</lcshuri>
+		<gaccode>nwla</gaccode>
+	</match>
+	<match>
+		<prefLabel>Appalachian Mountains</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85006071</lcshuri>
+		<gaccode>n-usa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Arab countries</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85006278</lcshuri>
+		<gaccode>ma</gaccode>
+	</match>
+	<match>
+		<prefLabel>Arabian Peninsula</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85006293</lcshuri>
+		<gaccode>ar</gaccode>
+	</match>
+	<match>
+		<prefLabel>Arabian Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85006295</lcshuri>
+		<gaccode>au</gaccode>
+	</match>
+	<match>
+		<prefLabel>Asia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85008606</lcshuri>
+		<gaccode>a</gaccode>
+	</match>
+	<match>
+		<prefLabel>Asia, Central</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85008625</lcshuri>
+		<gaccode>ac</gaccode>
+	</match>
+	<match>
+		<prefLabel>Atlantic Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85009201</lcshuri>
+		<gaccode>l</gaccode>
+	</match>
+	<match>
+		<prefLabel>Atlas Mountains</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85009230</lcshuri>
+		<gaccode>fa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Australasia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85009573</lcshuri>
+		<gaccode>u</gaccode>
+	</match>
+	<match>
+		<prefLabel>Balkan Peninsula</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85011191</lcshuri>
+		<gaccode>ed</gaccode>
+	</match>
+	<match>
+		<prefLabel>Baltic States</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85011369</lcshuri>
+		<gaccode>eb</gaccode>
+	</match>
+	<match>
+		<prefLabel>Benelux countries</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85013135</lcshuri>
+		<gaccode>el</gaccode>
+	</match>
+	<match>
+		<prefLabel>Bengal, Bay of</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85013142</lcshuri>
+		<gaccode>ab</gaccode>
+	</match>
+	<match>
+		<prefLabel>Black Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85014616</lcshuri>
+		<gaccode>mb</gaccode>
+	</match>
+	<match>
+		<prefLabel>Bo Hai (China)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86002618</lcshuri>
+		<gaccode>a-ccp</gaccode>
+	</match>
+	<match>
+		<prefLabel>Borneo</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85015863</lcshuri>
+		<gaccode>a-bn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Bouvet Island</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh87007247</lcshuri>
+		<gaccode>lsbv</gaccode>
+	</match>
+	<match>
+		<prefLabel>Caroline Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85020397</lcshuri>
+		<gaccode>poci</gaccode>
+	</match>
+	<match>
+		<prefLabel>Caspian Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85020611</lcshuri>
+		<gaccode>ak</gaccode>
+	</match>
+	<match>
+		<prefLabel>Caucasus</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85021434</lcshuri>
+		<gaccode>e-urk</gaccode>
+	</match>
+	<match>
+		<prefLabel>Caucasus, Northern (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85021435</lcshuri>
+		<gaccode>e-urr</gaccode>
+	</match>
+	<match>
+		<prefLabel>Central America</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85021871</lcshuri>
+		<gaccode>nc</gaccode>
+	</match>
+	<match>
+		<prefLabel>Central Chernozem Region (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86002089</lcshuri>
+		<gaccode>e-urc</gaccode>
+	</match>
+	<match>
+		<prefLabel>Cold regions</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85027923</lcshuri>
+		<gaccode>q</gaccode>
+	</match>
+	<match>
+		<prefLabel>Commonwealth countries</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85029004</lcshuri>
+		<gaccode>b</gaccode>
+	</match>
+	<match>
+		<prefLabel>Congo River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85031104</lcshuri>
+		<gaccode>fg</gaccode>
+	</match>
+	<match>
+		<prefLabel>Danube River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85035769</lcshuri>
+		<gaccode>eo</gaccode>
+	</match>
+	<match>
+		<prefLabel>Deep space</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh2008003313</lcshuri>
+		<gaccode>zd</gaccode>
+	</match>
+	<match>
+		<prefLabel>Developed countries</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh2001000124</lcshuri>
+		<gaccode>dd</gaccode>
+	</match>
+	<match>
+		<prefLabel>Developing countries</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85037341</lcshuri>
+		<gaccode>d</gaccode>
+	</match>
+	<match>
+		<prefLabel>Earth</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85040427</lcshuri>
+		<gaccode>x</gaccode>
+	</match>
+	<match>
+		<prefLabel>East (U.S.)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh88005829</lcshuri>
+		<gaccode>n-usr</gaccode>
+	</match>
+	<match>
+		<prefLabel>East Asia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85040525</lcshuri>
+		<gaccode>ae</gaccode>
+	</match>
+	<match>
+		<prefLabel>East China Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85040538</lcshuri>
+		<gaccode>an</gaccode>
+	</match>
+	<match>
+		<prefLabel>Easter Island</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85040596</lcshuri>
+		<gaccode>poea</gaccode>
+	</match>
+	<match>
+		<prefLabel>Eastern Hemisphere</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85040608</lcshuri>
+		<gaccode>xa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Eurasia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85045617</lcshuri>
+		<gaccode>me</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85045631</lcshuri>
+		<gaccode>e</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe, Central</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85021901</lcshuri>
+		<gaccode>ec</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe, Eastern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85045765</lcshuri>
+		<gaccode>ee</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe, Northern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85045778</lcshuri>
+		<gaccode>en</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe, Southern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85045783</lcshuri>
+		<gaccode>es</gaccode>
+	</match>
+	<match>
+		<prefLabel>Europe, Western</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh95003677</lcshuri>
+		<gaccode>ew</gaccode>
+	</match>
+	<match>
+		<prefLabel>Gaza Strip</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85053589</lcshuri>
+		<gaccode>awgz</gaccode>
+	</match>
+	<match>
+		<prefLabel>Great Britain</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85056605</lcshuri>
+		<gaccode>e-uk</gaccode>
+	</match>
+	<match>
+		<prefLabel>Great Plains</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85056998</lcshuri>
+		<gaccode>np</gaccode>
+	</match>
+	<match>
+		<prefLabel>Great Rift Valley</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85057004</lcshuri>
+		<gaccode>fr</gaccode>
+	</match>
+	<match>
+		<prefLabel>Himalaya Mountains</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85060851</lcshuri>
+		<gaccode>ah</gaccode>
+	</match>
+	<match>
+		<prefLabel>Hispaniola</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85061066</lcshuri>
+		<gaccode>nwhi</gaccode>
+	</match>
+	<match>
+		<prefLabel>Hudson Bay</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85062778</lcshuri>
+		<gaccode>n-cnh</gaccode>
+	</match>
+	<match>
+		<prefLabel>Indian Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85064984</lcshuri>
+		<gaccode>i</gaccode>
+	</match>
+	<match>
+		<prefLabel>Indochina</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85065716</lcshuri>
+		<gaccode>ai</gaccode>
+	</match>
+	<match>
+		<prefLabel>Ireland</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85067964</lcshuri>
+		<gaccode>e-ie</gaccode>
+	</match>
+	<match>
+		<prefLabel>Jan Mayen Island</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh87001998</lcshuri>
+		<gaccode>lnjn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Johnston Island</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh90005900</lcshuri>
+		<gaccode>poji</gaccode>
+	</match>
+	<match>
+		<prefLabel>Jupiter</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85071063</lcshuri>
+		<gaccode>zju</gaccode>
+	</match>
+	<match>
+		<prefLabel>Jupiter (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85071063</lcshuri>
+		<gaccode>zju</gaccode>
+	</match>
+	<match>
+		<prefLabel>Kermadec Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85072056</lcshuri>
+		<gaccode>poki</gaccode>
+	</match>
+	<match>
+		<prefLabel>Korea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85073008</lcshuri>
+		<gaccode>a-kr</gaccode>
+	</match>
+	<match>
+		<prefLabel>Kunlun Mountains (China and India)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh00006756</lcshuri>
+		<gaccode>a-cck</gaccode>
+	</match>
+	<match>
+		<prefLabel>Latin America</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85074879</lcshuri>
+		<gaccode>cl</gaccode>
+	</match>
+	<match>
+		<prefLabel>Leeward Islands (West Indies)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85075697</lcshuri>
+		<gaccode>nwli</gaccode>
+	</match>
+	<match>
+		<prefLabel>Line Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh91003705</lcshuri>
+		<gaccode>poln</gaccode>
+	</match>
+	<match>
+		<prefLabel>Malaya</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85080080</lcshuri>
+		<gaccode>am</gaccode>
+	</match>
+	<match>
+		<prefLabel>Malaysia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85080109</lcshuri>
+		<gaccode>a-my</gaccode>
+	</match>
+	<match>
+		<prefLabel>Maritime Provinces</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85081318</lcshuri>
+		<gaccode>n-cnm</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mars</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85081548</lcshuri>
+		<gaccode>zma</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mars (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85081548</lcshuri>
+		<gaccode>zma</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mekong River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85083357</lcshuri>
+		<gaccode>ag</gaccode>
+	</match>
+	<match>
+		<prefLabel>Melanesia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85083370</lcshuri>
+		<gaccode>pome</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mercury</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85083791</lcshuri>
+		<gaccode>zme</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mercury (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85083791</lcshuri>
+		<gaccode>zme</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mexico, Gulf of</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85084621</lcshuri>
+		<gaccode>nm</gaccode>
+	</match>
+	<match>
+		<prefLabel>Micronesia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85084871</lcshuri>
+		<gaccode>pott</gaccode>
+	</match>
+	<match>
+		<prefLabel>Middle Atlantic States</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85085007</lcshuri>
+		<gaccode>n-usl</gaccode>
+	</match>
+	<match>
+		<prefLabel>Middle East</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85090501</lcshuri>
+		<gaccode>aw</gaccode>
+	</match>
+	<match>
+		<prefLabel>Middle West</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85085029</lcshuri>
+		<gaccode>n-usc</gaccode>
+	</match>
+	<match>
+		<prefLabel>Midway Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85085054</lcshuri>
+		<gaccode>poxf</gaccode>
+	</match>
+	<match>
+		<prefLabel>Mississippi River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85086206</lcshuri>
+		<gaccode>n-usm</gaccode>
+	</match>
+	<match>
+		<prefLabel>Missouri River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85086237</lcshuri>
+		<gaccode>n-uss</gaccode>
+	</match>
+	<match>
+		<prefLabel>Moon</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85087107</lcshuri>
+		<gaccode>zmo</gaccode>
+	</match>
+	<match>
+		<prefLabel>Neptune</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85090874</lcshuri>
+		<gaccode>zne</gaccode>
+	</match>
+	<match>
+		<prefLabel>Neptune (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85090874</lcshuri>
+		<gaccode>zne</gaccode>
+	</match>
+	<match>
+		<prefLabel>New England</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85091260</lcshuri>
+		<gaccode>n-usn</gaccode>
+	</match>
+	<match>
+		<prefLabel>New Guinea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85091290</lcshuri>
+		<gaccode>a-nw</gaccode>
+	</match>
+	<match>
+		<prefLabel>Niger</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh2005002663</lcshuri>
+		<gaccode>f-ng</gaccode>
+	</match>
+	<match>
+		<prefLabel>Niger River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85091852</lcshuri>
+		<gaccode>fi</gaccode>
+	</match>
+	<match>
+		<prefLabel>Nile River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85091951</lcshuri>
+		<gaccode>fl</gaccode>
+	</match>
+	<match>
+		<prefLabel>North America</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85092455</lcshuri>
+		<gaccode>n</gaccode>
+	</match>
+	<match>
+		<prefLabel>North Atlantic Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85092468</lcshuri>
+		<gaccode>ln</gaccode>
+	</match>
+	<match>
+		<prefLabel>North Pacific Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85092520</lcshuri>
+		<gaccode>pn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Northeastern States</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85092541</lcshuri>
+		<gaccode>n-use</gaccode>
+	</match>
+	<match>
+		<prefLabel>Northern Australia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh95010749</lcshuri>
+		<gaccode>u-atn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Northern Hemisphere</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86007205</lcshuri>
+		<gaccode>xb</gaccode>
+	</match>
+	<match>
+		<prefLabel>Oceania</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85093910</lcshuri>
+		<gaccode>po</gaccode>
+	</match>
+	<match>
+		<prefLabel>Ohio River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85094289</lcshuri>
+		<gaccode>n-uso</gaccode>
+	</match>
+	<match>
+		<prefLabel>Outer space</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85096156</lcshuri>
+		<gaccode>zo</gaccode>
+	</match>
+	<match>
+		<prefLabel>Pacific Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85096476</lcshuri>
+		<gaccode>p</gaccode>
+	</match>
+	<match>
+		<prefLabel>Paracel Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85097727</lcshuri>
+		<gaccode>aopf</gaccode>
+	</match>
+	<match>
+		<prefLabel>Persian Gulf</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85100065</lcshuri>
+		<gaccode>ap</gaccode>
+	</match>
+	<match>
+		<prefLabel>Pluto</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85103579</lcshuri>
+		<gaccode>zpl</gaccode>
+	</match>
+	<match>
+		<prefLabel>Pluto (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85103579</lcshuri>
+		<gaccode>zpl</gaccode>
+	</match>
+	<match>
+		<prefLabel>Polynesia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85104688</lcshuri>
+		<gaccode>pops</gaccode>
+	</match>
+	<match>
+		<prefLabel>Prairie Provinces</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85106075</lcshuri>
+		<gaccode>n-cnp</gaccode>
+	</match>
+	<match>
+		<prefLabel>Pyrenees</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85109312</lcshuri>
+		<gaccode>ep</gaccode>
+	</match>
+	<match>
+		<prefLabel>Red Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85112090</lcshuri>
+		<gaccode>mr</gaccode>
+	</match>
+	<match>
+		<prefLabel>Rhine River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85113657</lcshuri>
+		<gaccode>er</gaccode>
+	</match>
+	<match>
+		<prefLabel>Rio de la Plata (Argentina and Uruguay)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85114154</lcshuri>
+		<gaccode>sp</gaccode>
+	</match>
+	<match>
+		<prefLabel>Rocky Mountains</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85114790</lcshuri>
+		<gaccode>nr</gaccode>
+	</match>
+	<match>
+		<prefLabel>Russian Far East (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125702</lcshuri>
+		<gaccode>e-urf</gaccode>
+	</match>
+	<match>
+		<prefLabel>Sahara</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85116501</lcshuri>
+		<gaccode>fd</gaccode>
+	</match>
+	<match>
+		<prefLabel>Samoan Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85117033</lcshuri>
+		<gaccode>posh</gaccode>
+	</match>
+	<match>
+		<prefLabel>Saturn</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85117690</lcshuri>
+		<gaccode>zsa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Saturn (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85117690</lcshuri>
+		<gaccode>zsa</gaccode>
+	</match>
+	<match>
+		<prefLabel>Scandinavia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85117937</lcshuri>
+		<gaccode>ev</gaccode>
+	</match>
+	<match>
+		<prefLabel>Siberia (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85122201</lcshuri>
+		<gaccode>e-urs</gaccode>
+	</match>
+	<match>
+		<prefLabel>Siberia, Eastern (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85122209</lcshuri>
+		<gaccode>e-ure</gaccode>
+	</match>
+	<match>
+		<prefLabel>Siberia, Western (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85122211</lcshuri>
+		<gaccode>e-urw</gaccode>
+	</match>
+	<match>
+		<prefLabel>Solar system</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85124544</lcshuri>
+		<gaccode>zs</gaccode>
+	</match>
+	<match>
+		<prefLabel>South Africa</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125452</lcshuri>
+		<gaccode>f-sa</gaccode>
+	</match>
+	<match>
+		<prefLabel>South America</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125524</lcshuri>
+		<gaccode>s</gaccode>
+	</match>
+	<match>
+		<prefLabel>South Asia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125541</lcshuri>
+		<gaccode>az</gaccode>
+	</match>
+	<match>
+		<prefLabel>South Atlantic Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125546</lcshuri>
+		<gaccode>ls</gaccode>
+	</match>
+	<match>
+		<prefLabel>South China Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125572</lcshuri>
+		<gaccode>ao</gaccode>
+	</match>
+	<match>
+		<prefLabel>South Pacific Ocean</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125590</lcshuri>
+		<gaccode>ps</gaccode>
+	</match>
+	<match>
+		<prefLabel>Southeast Asia</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85008627</lcshuri>
+		<gaccode>as</gaccode>
+	</match>
+	<match>
+		<prefLabel>Southern Hemisphere</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86007206</lcshuri>
+		<gaccode>xc</gaccode>
+	</match>
+	<match>
+		<prefLabel>Southern States</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125633</lcshuri>
+		<gaccode>n-usu</gaccode>
+	</match>
+	<match>
+		<prefLabel>Southwest, New</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125669</lcshuri>
+		<gaccode>n-ust</gaccode>
+	</match>
+	<match>
+		<prefLabel>Soviet Union, Northwestern</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85125866</lcshuri>
+		<gaccode>e-urn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Spratly Islands</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85126984</lcshuri>
+		<gaccode>aoxp</gaccode>
+	</match>
+	<match>
+		<prefLabel>Sudan (Region)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86000769</lcshuri>
+		<gaccode>fn</gaccode>
+	</match>
+	<match>
+		<prefLabel>Suez Canal (Egypt)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85129633</lcshuri>
+		<gaccode>fu</gaccode>
+	</match>
+	<match>
+		<prefLabel>Sun</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85130462</lcshuri>
+		<gaccode>zsu</gaccode>
+	</match>
+	<match>
+		<prefLabel>Swan Islands (Honduras)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh97005334</lcshuri>
+		<gaccode>nwsv</gaccode>
+	</match>
+	<match>
+		<prefLabel>Thailand, Gulf of</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85134453</lcshuri>
+		<gaccode>af</gaccode>
+	</match>
+	<match>
+		<prefLabel>Tien Shan</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85135294</lcshuri>
+		<gaccode>at</gaccode>
+	</match>
+	<match>
+		<prefLabel>Tropics</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85138064</lcshuri>
+		<gaccode>w</gaccode>
+	</match>
+	<match>
+		<prefLabel>Ural Mountains (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85141266</lcshuri>
+		<gaccode>e-uru</gaccode>
+	</match>
+	<match>
+		<prefLabel>Uranus</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85141296</lcshuri>
+		<gaccode>zur</gaccode>
+	</match>
+	<match>
+		<prefLabel>Uranus (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85141296</lcshuri>
+		<gaccode>zur</gaccode>
+	</match>
+	<match>
+		<prefLabel>Venus</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85142768</lcshuri>
+		<gaccode>zve</gaccode>
+	</match>
+	<match>
+		<prefLabel>Venus (Planet)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85142768</lcshuri>
+		<gaccode>zve</gaccode>
+	</match>
+	<match>
+		<prefLabel>Volga River (Russia)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85144286</lcshuri>
+		<gaccode>e-urp</gaccode>
+	</match>
+	<match>
+		<prefLabel>Volta River (Ghana)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86001958</lcshuri>
+		<gaccode>fv</gaccode>
+	</match>
+	<match>
+		<prefLabel>Wake Island</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh91003697</lcshuri>
+		<gaccode>powk</gaccode>
+	</match>
+	<match>
+		<prefLabel>West (U.S.)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85146140</lcshuri>
+		<gaccode>n-usp</gaccode>
+	</match>
+	<match>
+		<prefLabel>West Bank</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85146164</lcshuri>
+		<gaccode>awba</gaccode>
+	</match>
+	<match>
+		<prefLabel>West Indies</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85146187</lcshuri>
+		<gaccode>nw</gaccode>
+	</match>
+	<match>
+		<prefLabel>Western Hemisphere</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh86007207</lcshuri>
+		<gaccode>xd</gaccode>
+	</match>
+	<match>
+		<prefLabel>Xi River (China)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh2001008088</lcshuri>
+		<gaccode>a-ccs</gaccode>
+	</match>
+	<match>
+		<prefLabel>Yangtze River (China)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85148991</lcshuri>
+		<gaccode>a-ccg</gaccode>
+	</match>
+	<match>
+		<prefLabel>Yellow River (China)</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85149104</lcshuri>
+		<gaccode>a-ccy</gaccode>
+	</match>
+	<match>
+		<prefLabel>Yellow Sea</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85149106</lcshuri>
+		<gaccode>ay</gaccode>
+	</match>
+	<match>
+		<prefLabel>Zambezi River</prefLabel>
+		<lcshuri>http://id.loc.gov/authorities/subjects/sh85149596</lcshuri>
+		<gaccode>fz</gaccode>
+	</match>
+</matches>;

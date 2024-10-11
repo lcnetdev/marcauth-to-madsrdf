@@ -36,7 +36,7 @@ declare namespace rdf                   = "http://www.w3.org/1999/02/22-rdf-synt
 declare namespace ri                    = "http://id.loc.gov/ontologies/RecordInfo#";
 declare namespace madsrdf				= "http://www.loc.gov/mads/rdf/v1#";
 declare namespace rdfs					= "http://www.w3.org/2000/01/rdf-schema#";
-
+import module namespace constants           = "info:lc/id-modules/constants#" at "../constants.xqy";
 (: FUNCTIONS :)
 (:
 -------------------------
@@ -113,7 +113,7 @@ declare function marcxml2recordinfo:marcxml2ri(
     let $createdYear := 
 		if (fn:matches($first2digits,"[a-zA-Z ]")) then  (: error  :)
 			"1900"
-        else if (xs:integer($first2digits) gt 74) then  
+        else if (xs:integer($first2digits) gt 65) then  
             fn:concat('19' , $first2digits)
         else
             fn:concat('20' , $first2digits)
