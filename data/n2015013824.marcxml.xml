@@ -1,0 +1,37 @@
+<marcxml:record xmlns:marcxml="http://www.loc.gov/MARC21/slim" xmlns:mets="http://www.loc.gov/METS/" xmlns:bf="http://id.loc.gov/ontologies/bibframe/" xmlns:bflc="http://id.loc.gov/ontologies/bflc/" xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ri="http://id.loc.gov/ontologies/RecordInfo#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:idx="info:lc/xq-modules/lcindex" xmlns:semtriples="http://marklogic.com/semantic" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <marcxml:leader xmlns:streams="info:lc/streams#">00559cz  a2200169n  4500</marcxml:leader>
+  <marcxml:controlfield tag="001">n2015013824</marcxml:controlfield>
+  <marcxml:controlfield tag="003" xmlns:streams="info:lc/streams#">DLC</marcxml:controlfield>
+  <marcxml:controlfield tag="005" xmlns:streams="info:lc/streams#">20230712064539.0</marcxml:controlfield>
+  <marcxml:controlfield tag="008" xmlns:streams="info:lc/streams#">150304n| azannaabn          |b aaa      </marcxml:controlfield>
+  <marcxml:datafield tag="010" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">n 2015013824</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="035" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">(OCoLC)oca10103763</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="040" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">DLC</marcxml:subfield>
+    <marcxml:subfield code="b">eng</marcxml:subfield>
+    <marcxml:subfield code="c">DLC</marcxml:subfield>
+    <marcxml:subfield code="e">rda</marcxml:subfield>
+    <marcxml:subfield code="d">ViU</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="053" ind1=" " ind2="4" xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">PJ7874.A7776</marcxml:subfield>
+    <marcxml:subfield code="5">ViU</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="100" ind1="1" ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Yāsīn, Qays</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="400" ind1="1" ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">ياسين، قيس.</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="667" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">Non-Latin script reference not evaluated</marcxml:subfield>
+  </marcxml:datafield>
+  <marcxml:datafield tag="670" ind1=" " ind2=" " xmlns:streams="info:lc/streams#">
+    <marcxml:subfield code="a">al-Mawrūth al-ʻIrāqī al-qadīm fī al-ḥaḍārah al-Islāmīyah, 2014:</marcxml:subfield>
+    <marcxml:subfield code="b">t.p. (د. قيس ياسين = D. Qays Yāsīn)</marcxml:subfield>
+  </marcxml:datafield>
+</marcxml:record>

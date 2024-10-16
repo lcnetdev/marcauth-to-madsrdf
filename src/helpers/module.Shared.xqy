@@ -60,6 +60,96 @@ declare function shared:convert-YYYYMMDD-to-EDTF($d as xs:string) as xs:string
     ""
 };
 
+
+(:~
+:   This function takes a string and attempts to return the most appropriate
+:   script code.
+:
+:   @return iso-script-code as string
+:)
+declare function shared:get-script($label) as xs:string {
+
+    let $label-codepoints := fn:string-to-codepoints($label)
+    let $script-chars := 
+        for $cp in $label-codepoints
+        return
+            if ($cp > 55215 and $cp < 55296) then
+                "Hang"
+            
+            else if ($cp > 44031 and $cp < 55204) then
+                "Hang"
+            
+            else if ($cp > 43359 and $cp < 43391) then
+                "Hang"
+                
+            else if ($cp > 19967 and $cp < 40960) then
+                "Hani"
+
+            else if ($cp > 12591 and $cp < 12688) then
+                "Hang"
+            
+            else if ($cp > 12447 and $cp < 12544 ) then
+                "Kana"
+
+            else if ($cp > 12351 and $cp < 12448 ) then
+                "Hira"
+
+            (: Support greek extended? :)
+            else if ($cp > 7935 and $cp < 8192) then
+                "Grek"
+            
+            else if ($cp > 4351 and $cp < 4608) then
+                "Hang"
+            
+            else if ($cp > 1535 and $cp < 1791) then
+                "Arab"
+            
+            else if ($cp > 1423 and $cp < 1536) then
+                "Hebr"
+            
+            else if ($cp > 1023 and $cp < 1280) then
+                "Cyrl"
+            
+            else if ($cp > 879 and $cp < 1024) then
+                "Grek"
+            
+            else if ($cp > 64 and $cp < 521) then
+                "Latn"
+        
+            else if ($cp > 65) then
+                "Zyyy"
+        
+            else
+                (: Periods, spaces, other punctuation, numbers :)
+                (: They don't count. :)
+                ()
+
+            
+            
+    let $otherscripts :=
+        <scripts>
+            {
+                for $k in ("Arab", "Cyrl", "Grek", "Hani", "Hang", "Hebr", "Hira")
+                let $c := fn:count($script-chars[. = $k])
+                where $c > 1
+                order by $c descending
+                return <script count="{$c}">{$k}</script>
+            }
+        </scripts>
+            
+    return 
+        if ( fn:count($otherscripts/script) > 0 ) then
+            if ( fn:exists($otherscripts/script[. = "Kana"]) or fn:exists($otherscripts/script[. = "Hira"]) ) then
+                "Jpan"
+            else if (fn:exists($otherscripts/script[. = "Hang"]) and fn:exists($otherscripts/script[. = "Hani"]) ) then
+                "Kore"
+            else
+                xs:string($otherscripts/script[1])
+        else
+            "Latn"
+    
+};
+
 (:~
 :   This function validate EDTF dates, returning true if good
 :   and false if not.

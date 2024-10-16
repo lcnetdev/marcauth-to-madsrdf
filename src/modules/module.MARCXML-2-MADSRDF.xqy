@@ -60,9 +60,6 @@ import module namespace file            =   "http://expath.org/ns/file";
 import module namespace constants-countries-gacs           = "info:lc/id-modules/constants-countries-gacs#" at "../constants/constants-countries-gacs.xqy";
 import module namespace marcxml2recordinfo = "info:lc/id-modules/recordInfoRDF#" at "module.MARCXML-2-RecordInfoRDF.xqy";
 import module namespace shared             = 'info:lc/id-modules/shared#' at "../helpers/module.Shared.xqy";
-import module namespace sharedml            = 'info:lc/id-modules/sharedml#' at "../helpers/module.SharedML.xqy";
-
-import module namespace constants-languages = "info:lc/id-modules/constants-languages#" at "../constants/constants-languages.xqy";
 
 (: NAMESPACES :)
 declare namespace marcxml       = "http://www.loc.gov/MARC21/slim";
@@ -78,9 +75,7 @@ declare namespace bf   			= "http://id.loc.gov/ontologies/bibframe/";
 declare namespace bflc   		= "http://id.loc.gov/ontologies/bflc/";
 declare namespace geosparql     = "http://www.opengis.net/ont/geosparql";
 declare namespace functx        = "http://www.functx.com";
-declare namespace xdmp          = "http://marklogic.com/xdmp";
 declare namespace s             = "http://www.w3.org/2005/xpath-functions";
-
 
 (: VARIABLES :)
 declare variable $marcxml2madsrdf:authSchemeMap := (
@@ -2371,7 +2366,8 @@ declare function marcxml2madsrdf:create-variant($df as element(), $scheme) as el
     let $df_sf_two_code := $df/marcxml:subfield[2]/@code
     let $label := marcxml2madsrdf:generate-label($df,$df_suffix)
     
-    let $script := sharedml:get-script($label)
+    let $script := shared:get-script($label)
+
     let $xmllang := 
         if ($scheme eq "names") then
             "zxx"
